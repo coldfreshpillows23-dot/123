@@ -1,1028 +1,960 @@
-# Longitudinal Health Marker Trend Report
+# Health Marker Trend Report: Robert J. Talbot
 
 | | |
 |---|---|
-| **Patient** | Robert J. Talbot — Male — DOB 07/14/1958 |
-| **Age over record** | 60 (Feb 2019) to 65 (May 2024) — reference ranges below are for an **adult male aged 60–65** |
-| **MRNs** | PCP 004-882-19 · Hospital WR-004882 · Nephrology NEP-2022-0447 · Endo END-1194 · Cardiology CAR-5582 · Transplant TRANS-2023-0819 |
-| **Actual data range** | **02/14/2019 → 05/14/2024 (≈5 years 3 months)**. Dense data from 03/2022 on. 2019–2021 values are semi-annual archive results only. |
-| **Sources** | 10 files (listed below). Every plotted value is traceable to a source code in the table under each chart. |
+| **Patient** | Robert J. Talbot, male, DOB 07/14/1958 (age 60 at first record, 65 at latest record) |
+| **MRNs** | PCP 004-882-19 · Nephrology NEP-2022-0447 · Endocrinology END-1194 · Cardiology CAR-5582 · Hospital WR-004882 · Transplant TRANS-2023-0819 |
+| **Height** | 5'11" (documented 03/04/2022 and 01/30/2024) |
+| **Actual data range** | **02/14/2019 to 05/14/2024 (about 5 years 3 months).** Dense data from 03/2022 onward; 2019 to early 2022 comes only from a staff-compiled lab archive with about 2 draws per year. |
+| **Sources (code)** | ARC = `old_baseline_labs_2019_2020.txt` · LAB = `lab_results.csv` · PCP = `physician_notes_redacted.txt` · NEPH = `nephrology_clinic_notes.txt` · ENDO = `endocrine_and_thyroid_notes.txt` · HOSP = `hospital_discharge_partial.txt` (unfinalized draft) · TX = `transplant_eval_bloodwork.txt` · CARD = `cardiology_clearance_note.txt` · VIT = `vitals_and_weights_log.txt` · RX = `pharmacy_med_record.csv` |
 
-> **Please read first: differences between the records received and the request**
-> - **No thyroid data exist in any file.** The file named `endocrine_and_thyroid_notes.txt` covers diabetes only. There are no TSH, free T4, or T3 results, so **no thyroid chart can be produced** (see §13).
-> - **No iron studies** (ferritin, iron, TIBC, TSAT) and **no hematology visit notes** were in the upload. Iron studies were ordered on 06/15/2022, but no results appear anywhere (see §13).
-> - No primary care *annual summaries* were found. PCP progress notes cover only 03/2022–01/2023. There was also no standalone medication reconciliation. I used the pharmacy dispensing record instead, and the hospital med-rec page is missing.
-> - Three files you did not mention **were** included and used: cardiology clearance (01/2024), transplant evaluation labs (12/2023), and an **unfinalized, truncated** hospital discharge draft (08/2023).
-> - **Values for a different person (living-donor T-0241, DOB 1991) are attached to the transplant file. They were excluded entirely.**
->
-> If any hematology, thyroid, or later PCP records exist, please upload them and I will add them.
+> **Decision support only.** Every plotted value is copied from the source files and can be traced by date and source code. Nothing is estimated or filled in. Recommendations are for review by the treating clinicians and are not orders.
+
+## Critical findings at a glance
+
+1. **Potassium has been high on 12 of 14 reliable results since 04/2022. The latest is 6.0 mEq/L (04/17/2024)**, on lisinopril 40 mg, after a hospitalization for K 6.1 in 08/2023.
+2. **Blood pressure is uncontrolled. Every reliable reading since 2022 is at or above 148/92, and the latest is 169/103.** That does not meet cardiology's listing condition (<140/90). LVH is present and LVEF fell from 60% to 52%.
+3. **Kidney function is falling fast.** eGFR went from 70 to 31 in 5 years (about 12.7 mL/min per year since 03/2022). Protein in the urine is rising (UPCR 620 mg/g), bicarbonate is 16, phosphorus 6.1, PTH 276.
+4. **Hemoglobin is 9.4 g/dL and an ESA was started without documented iron studies.** None of the uploaded files contain iron studies, hematology notes or thyroid tests (see Section 7).
+
+---
 
 ## How to read the charts
 
-- **Colour (GitHub):** each chart sits in a `diff` block. **Rows outside the reference range start with `-` and render red. Rows inside the range start with `+` and render green.** Points and connecting lines therefore appear red wherever the value is out of range.
-- **Plain text editor (no colour):** the same `-` / `+` in column 1 marks out-of-range / in-range rows. Points are drawn as **`X` = outside reference range**, **`o` = within range**, and **`?` = questionable value**. A `?` value is present in the source but flagged, for example suspected hemolysis or a suspected wrong-patient row. It is plotted, but it is **excluded from trend interpretation** and is not connected by lines.
-- A dashed `ULN`/`LLN` row marks the upper/lower reference limit.
-- **Gaps:** the x-axis lists every date on which *any* marker in that chart was measured (oldest at left). A `~` on the `no data ->` row means the marker was **not measured on that date**. Lines are **not** drawn across gaps.
-- The x-axis is **by encounter, not to time scale** (e.g., 2019–2021 draws are ~6 months apart, 2023 draws only weeks apart). Rows are rounded to the nearest gridline, and **exact values are in the table under each chart** (`H`/`L` = high/low).
-- **Panel grouping:** multi-analyte blood tests are grouped into shared-axis charts rather than one chart per value. The **CBC is one chart (§9)**. CMP components are grouped by clinical question: renal (§1), electrolytes/acid–base (§3), and albumin (§5), with glucose in the glycemic section (§7). CMP liver/protein results exist for only one date and appear in §14.
-- **Treatment recommendations are written for the treating provider to consider. They are not orders.** Each one is triggered per the report rules (≥2 out-of-range values in a chart).
-
-| Code | Source file |
-|---|---|
-| ARC | `old_baseline_labs_2019_2020.txt (PCP lab archive)` |
-| LAB | `lab_results.csv (Westfield Regional lab)` |
-| NEPH | `nephrology_clinic_notes.txt (in-house draws)` |
-| HOSP | `hospital_discharge_partial.txt (UNFINALIZED DRAFT)` |
-| TX | `transplant_eval_bloodwork.txt` |
-| CARD | `cardiology_clearance_note.txt` |
-| ENDO | `endocrine_and_thyroid_notes.txt` |
-| VIT | `vitals_and_weights_log.txt (nursing log)` |
-| PCP | `physician_notes_redacted.txt` |
-| RX | `pharmacy_med_record.csv (dispensing record; medication context only, no values plotted)` |
-
-
-## At-a-glance: most urgent findings (details in the Summary)
-1. **Potassium 6.0 mEq/L on 04/17/2024** on lisinopril 40 mg (last dispensed 02/10/2024). He was hospitalized for K⁺ 6.1 in 08/2023, and **the 04/17/2024 nephrology plan does not address potassium.**
-2. **Uncontrolled stage 2 hypertension.** Readings have risen to 166–172/100–106 in 2024, with LVH and LVEF down from 60% to 52%. Cardiology's listing condition (<140/90) is unmet.
-3. **Progressive CKD (eGFR 70 → 31).** This comes with worsening metabolic acidosis (CO₂ 16), hyperphosphatemia (6.1), rising PTH (276), and falling albumin (2.8).
-4. **Anemia (Hgb 14.8 → 9.4).** An ESA was started 04/19/2024 with **no iron studies documented anywhere**.
-5. **HbA1c 8.5–8.7%**, above the transplant program's 8.0% threshold. The 05/14/2024 endocrine note wrongly calls 8.5% "below" it.
+- **Color:** 🟢 = within the reference range · 🔴 = outside the reference range · 🟡 = value was reported but is questionable (hemolysis, conflicting reports, wrong-patient suspicion). 🟡 values are shown but are not used to judge trends. Emoji were used for color because they show in color both in a plain text editor and on GitHub. Tables also mark **H**/**L** (high/low) and **?** (questionable), so the meaning survives black-and-white printing.
+- **Time axis:** oldest on the left, newest on the right. **One column = 2 months, and spacing is proportional to real time**, so sparse years look sparse. When there are several results in one 2-month column, they are stacked. Exact dates and values are in the table under each chart.
+- **Gaps are marked in each chart:** an `x` on the `no result` row means a panel or visit happened in that window but this marker was not reported. The `gaps >=6 mo` line lists every interval of 6 months or more between results, and says **NO RESULTS before …** when a marker was first measured well after the record begins (02/2019).
+- **Dashed lines** are reference limits. A dot is always drawn on the correct side of a limit. Because rows are binned, a dot's height is approximate; the table gives the exact value.
+- Reference ranges are for an **adult male aged 60 to 65**. The reporting lab's range is used where it gave one; age- or sex-specific notes are added where they matter.
 
 ---
-# Part A — Kidney function and chemistry
 
-## 1. Kidney function — CMP renal markers (Creatinine, eGFR, BUN)
+## 1. Comprehensive Metabolic Panel (CMP)
 
-```diff
-  Creatinine (mg/dL)
--         2.10 |
--         2.00 |                                                X.                  .X
--         1.90 |                                               .  .X.         .X..X.
--         1.80 |                                              .      .X..X..X.
--         1.70 |                                            .X
--         1.60 |                                      .X..X.
--         1.50 |                             .X..X..X.
--         1.40 |                       .X..X.
-      ULN 1.35 :- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-+         1.30 |           .o..o..o..o.
-+         1.20 |  .o..o..o.
-+         1.10 |o.
-    no data -> |
+The patient never had a complete 14-analyte CMP on a single date. The records contain partial renal-type panels. All CMP analytes are grouped in one chart below, with a shared time axis.
 
-  eGFR (mL/min/1.73m2)
-+           70 |o..o.
-+           65 |     .o..o.
-+           60 |           .o.   .o.
-        LLN 60 :- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
--           55 |              .X.   .X..X.
--           50 |                          .X..X..X.
--           45 |                                   .X..X.
--           40 |                                         .X..X
--           35 |                                              ..  .X..X..X..X     X.
--           30 |                                                X.                  .X
-    no data -> |                                                               ~
+```text
+Legend: 🟢 within reference range   🔴 outside reference range   🟡 questionable value (see notes)
+        x = drawn/visit on that date but no result for this marker   1 column = 2 months
 
-  BUN (mg/dL)
--           50 |                                                X
--           45 |                                               . ..
--           40 |                                              .    X       .X     X
--           35 |                                             X           X.
--           30 |                                .X
--           25 |                     X..X..X..X.
-        ULN 20 :- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-+           20 |
-+           15 |o
-+           10 |
-    no data -> |   ~  ~  ~  ~  ~  ~                 ~  ~  ~           ~        ~     ~
+[1] CREATININE (mg/dL)  ref 0.74-1.35 (LLN 0.74 below chart)
+        2.10 |
+        2.00 |                                                      🔴      🔴
+        1.90 |                                                      🔴    🔴🔴
+        1.80 |                                                        🔴🔴
+        1.70 |                                                    🔴
+        1.60 |                                                🔴🔴
+        1.50 |                                          🔴🔴🔴
+        1.40 |                                      🔴🔴
+    ULN 1.35 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        1.30 |                        🟢    🟢    🟢🟢
+        1.20 |        🟢    🟢    🟢
+        1.10 |🟢
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+ gaps >=6 mo : Feb 2019 -> Sep 2019 (7 mo); Mar 2020 -> Sep 2020 (6 mo)
 
-               ++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-         month  02 09 03 09 02 08 02 03 04 06 07 09 11 01 04 05 08 08 10 11 12 01 03 04
-          year  19 19 20 20 21 21 22 22 22 22 22 22 22 23 23 23 23 23 23 23 23 24 24 24
+[2] eGFR (mL/min/1.73m2)  ref >=60; KDIGO stage boundaries shown
+          69 |🟢      🟢
+          66 |              🟢
+          63 |                    🟢  🟢
+          60 |                                    🟢
+      LLN 60 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          57 |                              🔴      🔴
+          54 |                                      🔴
+          51 |                                        🔴
+          48 |                                          🔴🔴
+          45 |                                              🔴
+  G3a|G3b 45 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          42 |                                                🔴🔴
+          39 |                                                    🔴
+          36 |                                                      🔴🔴🔴
+          33 |                                                      🔴  🔴  🔴
+          30 |                                                              🔴
+   G3b|G4 30 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+   no result :                                                            x
+ gaps >=6 mo : Feb 2019 -> Sep 2019 (7 mo); Mar 2020 -> Sep 2020 (6 mo)
+
+[3] BUN (mg/dL)  ref 7-20 (LLN 7 below chart)
+          50 |                                                      🔴
+          46 |
+          42 |                                                      🔴      🔴
+          38 |                                                          🔴
+          34 |                                                    🔴
+          30 |                                            🔴
+          26 |                                      🔴🔴🔴
+          22 |                                      🔴
+      ULN 20 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          18 |
+          14 |🟢
+          10 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+   no result :        x     x     x   x     x     x         x x x     x   x
+ gaps >=6 mo : Feb 2019 -> Mar 2022 (37 mo); Sep 2022 -> May 2023 (8 mo)
+
+[4] POTASSIUM (mEq/L)  ref 3.5-5.1
+         6.4 |                                                      🟡
+         6.2 |
+         6.0 |                                                      🔴    🟡🔴
+         5.8 |                                                        🔴🔴🟡🔴
+         5.6 |                                              🔴🟡🔴        🔴
+         5.4 |                                            🔴
+         5.2 |                                      🔴              🔴
+     ULN 5.1 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         5.0 |                                                🟢
+         4.8 |                                          🟢
+         4.6 |
+         4.4 |                              🟢
+         4.2 |
+         4.0 |🟢            🟢                        🟡
+         3.8 |
+         3.6 |
+     LLN 3.5 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+   no result :        x           x   x           x               x
+ gaps >=6 mo : Feb 2019 -> Mar 2020 (13 mo); Mar 2020 -> Aug 2021 (17 mo); Aug 2021 -> Apr 2022 (8 mo)
+
+[5] SODIUM (mEq/L)  ref 136-145
+         146 |
+     ULN 145 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         144 |
+         142 |
+         140 |              🟢
+         138 |                                      🟢  🟢              🟢
+         136 |
+     LLN 136 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         134 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+   no result :x       x           x   x     x     x   x   x x x x x x x   x x
+ gaps >=6 mo : NO RESULTS before Mar 2020 (record starts Feb 2019); Mar 2020 -> Apr 2022 (25 mo); Jul 2022 -> Dec 2023 (17 mo)
+
+[6] CO2 / BICARBONATE (mEq/L)  ref 22-29 (ULN 29 above chart)
+          24 |
+          23 |
+          22 |                                          🟢
+      LLN 22 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          21 |                                              🔴
+          20 |                                                🔴🔴
+          19 |                                                    🔴🔴
+          18 |                                                        🔴🔴
+   treat <18 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          17 |                                                          🔴  🔴
+          16 |                                                              🔴
+          15 |                                                      🔴
+          14 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+   no result :x       x     x     x   x     x     x x x   x               x
+ gaps >=6 mo : NO RESULTS before Jul 2022 (record starts Feb 2019)
+
+[7] GLUCOSE, lab/visit (mg/dL)  ref fasting 70-99
+         210 |
+         200 |                                                      🔴
+         190 |
+         180 |                                                      🔴🔴🔴
+         170 |                                                🔴            🔴
+         160 |                                                🔴  🔴
+         150 |                                      🔴🔴  🔴
+         140 |                              🔴    🔴
+         130 |                                                          🔴
+         120 |        🔴    🔴        🔴
+         110 |🔴                                    🔴
+         100 |
+      ULN 99 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          90 |
+          80 |
+          70 |
+      LLN 70 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          60 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+   no result :                    x                     x   x   x         x
+ gaps >=6 mo : Feb 2019 -> Sep 2019 (7 mo); Mar 2020 -> Feb 2021 (12 mo)
+
+[8] ALBUMIN (g/dL)  ref 3.5-5.0 (ULN 5.0 above chart)
+         3.8 |
+         3.7 |                                          🟢
+         3.6 |                                            🟢
+         3.5 |                                              🟢
+     LLN 3.5 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         3.4 |
+         3.3 |                                                🔴
+         3.2 |                                                  🔴
+         3.1 |                                                          🔴
+         3.0 |                                                        🔴
+         2.9 |                                                          🔴  🔴
+         2.8 |                                                              🔴
+         2.7 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+   no result :x       x     x     x   x     x     x x x           x x     x
+ gaps >=6 mo : NO RESULTS before Jul 2022 (record starts Feb 2019); Apr 2023 -> Oct 2023 (6 mo)
+
+[9] CALCIUM, total (mg/dL)  ref 8.5-10.5 (uncorrected for albumin)
+        10.6 |
+    ULN 10.5 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        10.4 |
+        10.2 |
+        10.0 |
+         9.8 |
+         9.6 |
+         9.4 |
+         9.2 |                                          🟢              🟢
+         9.0 |
+         8.8 |
+         8.6 |
+     LLN 8.5 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         8.4 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+   no result :x       x     x     x   x     x     x x x   x x x x x x x   x x
+ gaps >=6 mo : NO RESULTS before Jul 2022 (record starts Feb 2019); Jul 2022 -> Dec 2023 (17 mo)
 ```
 
-| # | Date | Creatinine (mg/dL) | eGFR (mL/min/1.73m²) | BUN (mg/dL) | Source(s) | Notes |
-|---|---|---|---|---|---|---|
-| 1 | 02/14/2019 | 1.12 | 70 | 14 | ARC |  |
-| 2 | 09/22/2019 | 1.16 | 68 | — *(gap)* | ARC |  |
-| 3 | 03/10/2020 | 1.19 | 66 | — *(gap)* | ARC |  |
-| 4 | 09/18/2020 | 1.22 | 64 | — *(gap)* | ARC | archive flagged LOW despite >60 |
-| 5 | 02/28/2021 | 1.25 | 62 | — *(gap)* | ARC |  |
-| 6 | 08/11/2021 | 1.29 | 59 **L** | — *(gap)* | ARC |  |
-| 7 | 02/03/2022 | 1.31 | 60 | — *(gap)* | ARC |  |
-| 8 | 03/04/2022 | 1.34 | 58 **L** | 22 **H** | LAB |  |
-| 9 | 04/03/2022 | 1.39 **H** | 55 **L** | 24 **H** | LAB |  |
-| 10 | 06/15/2022 | 1.44 **H** | 51 **L** | 26 **H** | LAB |  |
-| 11 | 07/28/2022 | 1.47 **H** | 49 **L** | 27 **H** | NEPH |  |
-| 12 | 09/22/2022 | 1.51 **H** | 48 **L** | 28 **H** | LAB |  |
-| 13 | 11/03/2022 | 1.54 **H** | 45 **L** | — *(gap)* | NEPH |  |
-| 14 | 01/10/2023 | 1.58 **H** | 44 **L** | — *(gap)* | LAB |  |
-| 15 | 04/04/2023 | 1.65 **H** | 41 **L** | — *(gap)* | NEPH |  |
-| 16 | 05/18/2023 | 1.71 **H** | 39 **L** | 34 **H** | LAB |  |
-| 17 | 08/10/2023 | 2.04 **H** | 32 **L** | 48 **H** | HOSP | admission, AKI; during AKI - not for staging |
-| 18 | 08/14/2023 | 1.89 **H** | 35 **L** | 40 **H** | HOSP | discharge |
-| 19 | 10/10/2023 | 1.82 **H** | 37 **L** | — *(gap)* | NEPH |  |
-| 20 | 11/02/2023 | 1.79 **H** | 36 **L** | 36 **H** | LAB |  |
-| 21 | 12/14/2023 | 1.84 **H** | 34 **L** | 38 **H** | TX |  |
-| 22 | 01/30/2024 | 1.93 **H** | — *(gap)* | — *(gap)* | CARD |  |
-| 23 | 03/14/2024 | 1.89 **H** | 33 **L** | 40 **H** | LAB |  |
-| 24 | 04/17/2024 | 1.95 **H** | 31 **L** | — *(gap)* | NEPH |  |
-
-
-**Reference ranges (male, 60–65 y):** Creatinine 0.74–1.35 mg/dL. eGFR ≥60 mL/min/1.73m² (the average for healthy men aged 60–69 is ≈85, and <60 defines CKD G3). BUN 7–20 mg/dL per Westfield lab; the transplant lab uses 8–25, and many labs allow up to ~23 mg/dL over age 60. **KDIGO stages:** G3a 45–59, G3b 30–44, G4 15–29, G5 <15.
-
-**Clinical observation — DECLINING (progressive).** Creatinine rose 1.12 → 1.95 mg/dL and eGFR fell 70 → 31, which moves the patient from G2 to **late G3b, bordering G4**.
-- Decline was ~3–4 mL/min/yr from 2019 to early 2022, then **~13 mL/min/yr from 03/2022 to 04/2024** (58 → 31). This is well above KDIGO's ">5 mL/min/yr" rapid-progression threshold.
-- BUN rose 14 → 40 mg/dL.
-- There was an **AKI episode on 08/10/2023** (Cr 2.04, BUN 48). It recovered only to a new, higher baseline.
-- eGFR has been out of range since 08/2021 and creatinine since 04/2022.
-- ⚠ From 2023 onward, the reported eGFR values are **3–6 points lower** than race-free CKD-EPI 2021 gives for the same creatinine. For example, Cr 1.95 at age 65 gives ≈37.5, not 31 (see Data Integrity). Reported values are plotted unchanged.
-
-**Treatment recommendations (multiple out-of-range values):**
-1. **Confirm true GFR with cystatin C (eGFRcr-cys)** and ask the lab which equation it reports. Accuracy matters here because staging, drug dosing, and transplant/dialysis timing all depend on it. Falling albumin and weight also suggest muscle loss, which distorts creatinine-based estimates.
-2. **Start an SGLT2 inhibitor** if there is no contraindication (KDIGO 2022/2024, 1A: T2D + CKD with eGFR ≥20). It slows CKD progression and reduces proteinuria and heart-failure risk. Watch volume status (he is on furosemide) and hold it on sick days. Its glucose-lowering effect is modest at this eGFR.
-3. Keep RAS blockade **only with active potassium management** (§3). Review all drugs for renal dosing and avoid NSAIDs and other nephrotoxins.
-4. **Kidney-failure readiness:** AV-access planning was referred on 04/04/2023, but no placement is documented. Confirm its status. Continue transplant work-up, and note that many programs start preemptive listing credit at eGFR ≤20.
-
-## 2. Urine protein — Urine protein-to-creatinine ratio (UPCR)
-
-```diff
-  UPCR (mg/g)
--          650 |
--          600 |                X
--          550 |             ...
--          500 |            X
--          450 |         ...
--          400 |       .X
--          350 |  ..X..
--          300 |X.
--          250 |
--          200 |
--          150 |
-      ULN <150 :- - - - - - - - -
-+          100 |
-    no data -> |
-
-               ++---+---+---+---+
-         month  07  11  04  10  04
-          year  22  22  23  23  24
-```
-
-| # | Date | UPCR (mg/g) | Source(s) | Notes |
-|---|---|---|---|---|
-| 1 | 07/28/2022 | 280 **H** | NEPH |  |
-| 2 | 11/03/2022 | 340 **H** | NEPH |  |
-| 3 | 04/04/2023 | 420 **H** | NEPH |  |
-| 4 | 10/10/2023 | 510 **H** | NEPH |  |
-| 5 | 04/17/2024 | 620 **H** | NEPH |  |
-
-
-**Reference range:** UPCR <150 mg/g (KDIGO A1). 150–500 is A2 and >500 is A3. Not age/sex dependent.
-
-**Clinical observation — DECLINING (worsening proteinuria).** UPCR more than doubled, 280 → 620 mg/g. It reached **A3 (>500 mg/g) from 10/2023** despite maximum-dose lisinopril. This is not nephrotic range. Nephrology drew it only 5 times, and no urine albumin-to-creatinine ratio (UACR) was found.
-
-**Treatment recommendations (multiple out-of-range values):**
-1. Add an **SGLT2 inhibitor** (§1), which reduces proteinuria on top of ACE inhibition.
-2. Control **blood pressure to target** (§9). Uncontrolled BP is the most modifiable driver here.
-3. Consider a **GLP-1 receptor agonist** (semaglutide showed kidney-outcome benefit in the FLOW trial), balanced against his nausea and poor appetite (§6). **Finerenone is not appropriate while K⁺ is >5.0.**
-4. Order a **UACR**, which KDIGO prefers for staging and for the Kidney Failure Risk Equation.
-
-## 3. Electrolytes & acid–base — CMP (Potassium, Sodium, CO₂/bicarbonate)
-
-```diff
-  Potassium (mEq/L)
--          6.2 |
--          6.0 |                                 X              ?    .X
--          5.8 |                                  .    X..X..X     X.
--          5.6 |                 .X  ?     X          .
--          5.4 |               X.         .        . .
--          5.2 |         X    .          .          X
-       ULN 5.1 :- - - - - - - - - - - - - - - - - - - - - - - - - - - -
-+          5.0 |        . .. .          o
-+          4.8 |            o
-+          4.6 |       .
-+          4.4 |      o
-+          4.2 |    ..
-+          4.0 |o..o
-+          3.8 |
-    no data -> |                              ~
-
-  Sodium (mEq/L)
--          146 |
-       ULN 145 :- - - - - - - - - - - - - - - - - - - - - - - - - - - -
-+          144 |
-+          142 |
-+          140 |   o
-+          138 |         o..o                                o
-+          136 |
-       LLN 136 :- - - - - - - - - - - - - - - - - - - - - - - - - - - -
--          134 |
-    no data -> |~     ~        ~  ~  ~  ~  ~  ~  ~  ~  ~  ~     ~  ~  ~
-
-  CO2 / bicarbonate (mEq/L)
--           30 |
-        ULN 29 :- - - - - - - - - - - - - - - - - - - - - - - - - - - -
-+           28 |
-+           26 |
-+           24 |
-+           22 |            o
-        LLN 22 :- - - - - - - - - - - - - - - - - - - - - - - - - - - -
--           20 |                  X..X     X..X     X.
--           18 |                               .. ..  .X..X..X     X.
--           16 |                                 X                   .X
--           14 |
-    no data -> |~  ~  ~  ~     ~        ~                       ~
-
-               ++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-         month  02 03 08 04 07 09 11 01 01 04 05 08 08 10 11 12 01 03 04
-          year  19 20 21 22 22 22 22 23 23 23 23 23 23 23 23 23 24 24 24
-```
-
-| # | Date | Potassium (mEq/L) | Sodium (mEq/L) | CO2 / bicarbonate (mEq/L) | Source(s) | Notes |
-|---|---|---|---|---|---|---|
-| 1 | 02/14/2019 | 4.1 | — *(gap)* | — *(gap)* | ARC |  |
-| 2 | 03/10/2020 | 4.0 | 139 | — *(gap)* | ARC |  |
-| 3 | 08/11/2021 | 4.4 | — *(gap)* | — *(gap)* | ARC |  |
-| 4 | 04/03/2022 | 5.2 **H** | 138 | — *(gap)* | LAB |  |
-| 5 | 07/28/2022 | 4.8 | 137 | 22 | NEPH |  |
-| 6 | 09/22/2022 | 5.4 **H** | — *(gap)* | — *(gap)* | LAB |  |
-| 7 | 11/03/2022 | 5.5 **H** | — *(gap)* | 21 **L** | NEPH |  |
-| 8 | 01/10/2023 | 5.6 ? | — *(gap)* | 20 **L** | LAB | lab: possible hemolyzed specimen |
-| 9 | 01/10/2023 (PM) | 5.1 | — *(gap)* | — *(gap)* | PCP | same-day PM point-of-care recheck |
-| 10 | 04/04/2023 | 5.5 **H** | — *(gap)* | 20 **L** | NEPH |  |
-| 11 | 05/18/2023 | — *(gap)* | — *(gap)* | 19 **L** | LAB |  |
-| 12 | 08/10/2023 | 6.1 **H** | — *(gap)* | 15 **L** | HOSP | admission (outpatient 6.4 same episode, ?hemolysis) |
-| 13 | 08/14/2023 | 5.2 **H** | — *(gap)* | 19 **L** | HOSP | discharge |
-| 14 | 10/10/2023 | 5.8 **H** | — *(gap)* | 18 **L** | NEPH |  |
-| 15 | 11/02/2023 | 5.7 **H** | — *(gap)* | 18 **L** | LAB |  |
-| 16 | 12/14/2023 | 5.7 **H** | 138 | 17 **L** | TX |  |
-| 17 | 01/30/2024 | 5.9 ? | — *(gap)* | — *(gap)* | CARD | cardiology: possible hemolysis, prolonged tourniquet |
-| 18 | 03/14/2024 | 5.8 **H** | — *(gap)* | 17 **L** | LAB |  |
-| 19 | 04/17/2024 | 6.0 **H** | — *(gap)* | 16 **L** | NEPH |  |
-
-
-**Reference ranges (male, 60–65 y):** Potassium 3.5–5.1 mEq/L (Westfield; transplant lab 3.5–5.5). Sodium 136–145 mEq/L. CO₂ 22–29 mEq/L (transplant lab 23–29). Chloride 98–107 mEq/L (one value, 102; see §14).
-
-**Clinical observation — POTASSIUM DECLINING (worsening hyperkalemia); SODIUM STABLE/NORMAL; CO₂ DECLINING (worsening metabolic acidosis).**
-- **Potassium:** 4.0–4.4 through 2021, then **persistently high since 04/2022** (5.2 → **6.0 on 04/17/2024**). The peak was 6.1 at the 08/2023 admission.
-  - Excluding the two hemolysis-suspect values (`?`), 11 of the 13 valid readings since 04/2022 are high. The two normal ones are 4.8 (07/2022) and the 5.1 same-day recheck.
-  - Two further potassium values (5.9 vs 5.7 for 01/25/2024) appear only as conflicting second-hand notes in the pharmacy record and are **not plotted**.
-  - The patient **kept taking lisinopril during a pharmacy potassium hold**.
-- **Sodium:** 137–139, normal throughout. Sparse (4 values), but no concern.
-- **CO₂:** fell steadily, 22 → **16 mEq/L**, despite sodium bicarbonate since 01/2023 and a dose increase in 11/2023.
-
-**Treatment recommendations (multiple out-of-range values):**
-1. **Urgent: repeat K⁺ now** on a non-hemolysed sample (plasma, minimal tourniquet, no fist clenching). Get an **ECG** if K⁺ is ≥6.0, and manage acutely per protocol. The last value (6.0) has no documented response.
-2. **Start a potassium binder** (patiromer or sodium zirconium cyclosilicate) so the ACE inhibitor can continue. KDIGO 2024 favours K⁺-lowering measures over stopping RAS blockade. If K⁺ stays ≥6.0 despite this, reduce the lisinopril dose.
-3. **Intensify alkali therapy.** Titrate sodium bicarbonate toward serum bicarbonate ≥22 (KDIGO 2012). KDIGO 2024 suggests at least considering treatment when bicarbonate is <18. Correcting acidosis also lowers K⁺ and slows bone and muscle loss. Account for the **sodium load** given his BP and edema.
-4. Refer to a **renal dietitian** for a low-potassium diet (also needed for phosphorus and protein). Screen for salt substitutes (KCl), NSAIDs, and other K⁺-raising agents.
-5. **Teach the patient** about potassium safety and medication holds, since he took lisinopril during the hold.
-
-## 4. CKD–Mineral & Bone Disorder (Phosphorus, PTH, Calcium)
-
-```diff
-  Phosphorus (mg/dL)
--          6.2 |
--          6.0 |                       .X..X
--          5.8 |                    .X.
--          5.6 |               X..X.
--          5.4 |             ..
--          5.2 |        .X..X
--          5.0 |   X..X.
--          4.8 |  .
--          4.6 |
-       ULN 4.5 :- - - - - - - - - - - - - -
-+          4.4 | .
-+          4.2 |o
-+          4.0 |
-    no data -> |
-
-  PTH, intact (pg/mL)
--          300 |
--          275 |                           X
--          250 |
--          225 |                    .X
--          200 |                  X.
--          175 |
--          150 |
--          125 |            X
--          100 |      X
--           75 |X
-        ULN 65 :- - - - - - - - - - - - - -
-+           50 |
-    no data -> |   ~     ~     ~        ~
-
-  Calcium (mg/dL)
--         11.0 |
-      ULN 10.5 :- - - - - - - - - - - - - -
-+         10.5 |
-+         10.0 |
-+          9.5 |
-+          9.0 |o                    o
-+          8.5 |
-       LLN 8.5 :- - - - - - - - - - - - - -
--          8.0 |
-    no data -> |   ~  ~  ~  ~  ~  ~     ~  ~
-
-               ++--+--+--+--+--+--+--+--+--+
-         month  07 09 11 01 04 05 10 12 03 04
-          year  22 22 22 23 23 23 23 23 24 24
-```
-
-| # | Date | Phosphorus (mg/dL) | PTH, intact (pg/mL) | Calcium (mg/dL) | Source(s) | Notes |
-|---|---|---|---|---|---|---|
-| 1 | 07/28/2022 | 4.2 | 68 **H** | 9.1 | NEPH |  |
-| 2 | 09/22/2022 | 4.9 **H** | — *(gap)* | — *(gap)* | LAB |  |
-| 3 | 11/03/2022 | 5.0 **H** | 92 **H** | — *(gap)* | NEPH |  |
-| 4 | 01/10/2023 | 5.2 **H** | — *(gap)* | — *(gap)* | LAB |  |
-| 5 | 04/04/2023 | 5.3 **H** | 124 **H** | — *(gap)* | NEPH |  |
-| 6 | 05/18/2023 | 5.5 **H** | — *(gap)* | — *(gap)* | LAB |  |
-| 7 | 10/10/2023 | 5.6 **H** | 198 **H** | — *(gap)* | NEPH |  |
-| 8 | 12/14/2023 | 5.8 **H** | 221 **H** | 9.2 | TX |  |
-| 9 | 03/14/2024 | 5.9 **H** | — *(gap)* | — *(gap)* | LAB |  |
-| 10 | 04/17/2024 | 6.1 **H** | 276 **H** | — *(gap)* | NEPH |  |
-
-
-**Reference ranges (adult male):** Phosphorus 2.5–4.5 mg/dL. Intact PTH 10–65 pg/mL. Calcium 8.5–10.5 mg/dL. 25-OH vitamin D 30–100 ng/mL (one value, **18 L**; see §14).
-
-**Clinical observation — DECLINING (progressive secondary hyperparathyroidism and hyperphosphatemia).**
-- **Phosphorus** rose 4.2 → **6.1 mg/dL** with almost no interruption. It has been high since 09/2022 despite sevelamer (started 09/2022, increased 08/2023).
-- **PTH** quadrupled, 68 → **276 pg/mL (≈4× ULN)**, despite calcitriol since 04/2023.
-- **Calcium** was normal on the only two draws (9.1, 9.2), so it is poorly monitored.
-- **Vitamin D was deficient (18 ng/mL)** on 12/2023, with no documented repletion.
-
-**Treatment recommendations (multiple out-of-range values):**
-1. **Verify the sevelamer regimen and adherence.** Pharmacy quantities don't match the prescribed sig, and "1600 mg" is not a standard tablet strength (see Data Integrity). Confirm it is taken **with meals**, and add renal dietitian phosphate counselling (processed-food additives).
-2. **Replete 25-OH vitamin D** with nutritional vitamin D (cholecalciferol/ergocalciferol). KDIGO 2017 advises correcting modifiable factors, including vitamin D deficiency and high phosphate intake, when PTH rises in non-dialysis CKD.
-3. **Reassess calcitriol.** KDIGO 2017 advises against routine calcitriol in G3a–G5 non-dialysis CKD, reserving it for severe, progressive hyperparathyroidism. Calcitriol also raises gut phosphate absorption and may be contributing to the phosphorus rise.
-4. Monitor **calcium, phosphorus, and alkaline phosphatase every 1–3 months and PTH every 3–6 months**, and **correct acidosis** (§3).
-
-## 5. Serum albumin (CMP protein marker)
-
-```diff
-  Albumin (g/dL)
-+          3.9 |
-+          3.8 |
-+          3.7 |o..
-+          3.6 |   .o.
-+          3.5 |      ..o.
-       LLN 3.5 :- - - - - - - - - - - - - - - - - - -
--          3.4 |          .
--          3.3 |           .X..
--          3.2 |               .X
--          3.1 |                 ...  ..X.
--          3.0 |                    X.    .
--          2.9 |                           .X...X..
--          2.8 |                                   .X
--          2.7 |
-    no data -> |
-
-               ++---+---+---+---+---+---+---+---+---+
-         month  07  09  11  01  04  10  11  12  03  04
-          year  22  22  22  23  23  23  23  23  24  24
-```
-
-| # | Date | Albumin (g/dL) | Source(s) | Notes |
-|---|---|---|---|---|
-| 1 | 07/28/2022 | 3.7 | NEPH |  |
-| 2 | 09/22/2022 | 3.6 | LAB |  |
-| 3 | 11/03/2022 | 3.5 | NEPH |  |
-| 4 | 01/10/2023 | 3.3 **L** | LAB |  |
-| 5 | 04/04/2023 | 3.2 **L** | NEPH |  |
-| 6 | 10/10/2023 | 3.0 **L** | NEPH |  |
-| 7 | 11/02/2023 | 3.1 **L** | LAB |  |
-| 8 | 12/14/2023 | 2.9 **L** | TX |  |
-| 9 | 03/14/2024 | 2.9 **L** | LAB |  |
-| 10 | 04/17/2024 | 2.8 **L** | NEPH |  |
-
-
-**Reference range (adult male 60–65 y):** 3.5–5.0 g/dL. Levels fall slightly with age, but <3.5 is abnormal at any adult age. Total protein was 6.1 g/dL (low-normal) in 12/2023 (§14).
-
-**Clinical observation — DECLINING.** Albumin fell 3.7 → **2.8 g/dL** and has been below range since 01/2023. This coincides with **decreased appetite and nausea** (endo/PCP notes), **~13 lb weight loss** (§11), and rising proteinuria. Proteinuria (620 mg/g) is far from nephrotic range, so the drop more likely reflects **protein-energy wasting and inflammation with worsening acidosis and uremia**. Low albumin is also a strong mortality marker in CKD and matters for transplant candidacy.
-
-**Treatment recommendations (multiple out-of-range values):**
-1. Get a **formal nutrition assessment** from a renal dietitian (Subjective Global Assessment). Aim for protein ~0.8 g/kg/day (KDIGO 2024 G3–G5 non-dialysis), and **avoid over-restriction in a patient who is losing weight**.
-2. **Correct metabolic acidosis** (§3), which drives protein breakdown.
-3. Assess whether the **anorexia, nausea, and the 08/2023 confusion are uremic symptoms**. These can be an indication to plan kidney replacement therapy sooner.
-4. **Review metoclopramide:** renally dose-adjust it and monitor for extrapyramidal effects.
----
-# Part B — Glycemic control
-
-## 6. Hemoglobin A1c
-
-```diff
-  HbA1c (%)
--          8.8 |
--          8.6 |                                         .X..X..X..X..X
--          8.4 |                                   .X..X.
--          8.2 |                              X..X.
--          8.0 |                            ..
--          7.8 |                           X
--          7.6 |                         ..
--          7.4 |                       .X
--          7.2 |                    .X.
--          7.0 |              .X..X.
--          6.8 |           .X.
--          6.6 |        .X.
--          6.4 |     .X.
--          6.2 |  .X.
--          6.0 |X.
--          5.8 |
-      ULN <5.7 :- - - - - - - - - - - - - - - - - - - - - - - - - - - -
-+          5.6 |
-    no data -> |
-
-               ++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-         month  02 09 03 09 02 08 02 03 04 09 01 02 05 05 09 12 01 03 05
-          year  19 19 20 20 21 21 22 22 22 22 23 23 23 23 23 23 24 24 24
-```
-
-| # | Date | HbA1c (%) | Source(s) | Notes |
-|---|---|---|---|---|
-| 1 | 02/14/2019 | 5.9 **H** | ARC |  |
-| 2 | 09/22/2019 | 6.2 **H** | ARC |  |
-| 3 | 03/10/2020 | 6.4 **H** | ARC |  |
-| 4 | 09/18/2020 | 6.6 **H** | ARC |  |
-| 5 | 02/28/2021 | 6.8 **H** | ARC |  |
-| 6 | 08/11/2021 | 7.0 **H** | ARC |  |
-| 7 | 02/03/2022 | 7.1 **H** | ARC |  |
-| 8 | 03/04/2022 | 7.2 **H** | LAB |  |
-| 9 | 04/03/2022 | 7.4 **H** | LAB | 30 days after prior A1c |
-| 10 | 09/22/2022 | 7.8 **H** | LAB |  |
-| 11 | 01/10/2023 | 8.1 **H** | LAB |  |
-| 12 | 02/22/2023 | 8.2 **H** | ENDO | point-of-care |
-| 13 | 05/18/2023 | 8.3 **H** | LAB |  |
-| 14 | 05/30/2023 | 8.4 **H** | ENDO |  |
-| 15 | 09/06/2023 | 8.6 **H** | ENDO |  |
-| 16 | 12/14/2023 | 8.5 **H** | TX |  |
-| 17 | 01/18/2024 | 8.7 **H** | ENDO |  |
-| 18 | 03/14/2024 | 8.6 **H** | LAB |  |
-| 19 | 05/14/2024 | 8.5 **H** | ENDO | ~3.5 wk after ESA start; may read falsely low |
-
-
-**Reference range:** Normal <5.7%. 5.7–6.4% is prediabetes and ≥6.5% is diabetes, regardless of age or sex. **Patient-specific targets:** ADA general goal <7.0%. A less strict goal of <8.0% is acceptable for an older adult with CKD and comorbidities. **The transplant program requires <8.0% for listing.**
-
-**Clinical observation — DECLINING (worsening glycemic control).**
-- HbA1c rose steadily, 5.9% (2019) → **8.7% (01/2024)**, then 8.5% (05/2024).
-- It reached 7.0% in 08/2021 and **has been above the 8.0% transplant threshold since 01/2023**, despite repaglinide, then glargine (02/2023), then prandial aspart (09/2023).
-- The 05/14/2024 "slight improvement" came **~3.5 weeks after the ESA was started**. ESA therapy, anemia, and advanced CKD all make HbA1c **read falsely low**, so true control may be worse.
-- ⚠ The endocrine note of 05/14/2024 states 8.5% is "below" the 8.0% threshold. **That is incorrect: it is above.**
-
-**Treatment recommendations (multiple out-of-range values):**
-1. **Start continuous glucose monitoring (CGM)**, which was discussed 01/2024 but has no documented start. Use the glucose management indicator (GMI) / time-in-range, because HbA1c is unreliable with CKD, anemia, and ESA therapy (KDIGO 2022 Diabetes-in-CKD).
-2. Add an **SGLT2 inhibitor** for kidney and heart protection (§1). If targets remain unmet, consider a **long-acting GLP-1 RA** (KDIGO 2022), started low and titrated slowly given nausea and poor appetite.
-3. **Reconcile glucose-lowering drugs.** It is unclear whether repaglinide continues alongside prandial aspart. Two prandial agents plus falling GFR means **high hypoglycemia risk**, since insulin clearance drops as GFR declines.
-4. **Confirm the diabetes-education referral** (09/2023) was completed, and coordinate endocrinology with the transplant team, as the endocrine note proposes.
-
-## 7. Blood glucose — laboratory (serum/plasma)
-
-```diff
-  Glucose, lab (mg/dL)
--          210 |
--          200 |                                    X
--          190 |                                   . ..
--          180 |                                       X     X.
--          170 |                                  .            .X
--          160 |                             .X..X      .   .
--          150 |                     X..X..X.            . .
--          140 |            X..X    .
--          130 |          ..    .                         X
--          120 |  .X..X..X       . .
--          110 |X.                X
--          100 |
-        ULN 99 :- - - - - - - - - - - - - - - - - - - - - - - - -
-+           90 |
-    no data -> |
-
-               ++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-         month  02 09 03 02 08 02 03 04 06 09 01 05 08 08 11 12 03
-          year  19 19 20 21 21 22 22 22 22 22 23 23 23 23 23 23 24
-```
-
-| # | Date | Glucose, lab (mg/dL) | Source(s) | Notes |
-|---|---|---|---|---|
-| 1 | 02/14/2019 | 108 **H** | ARC |  |
-| 2 | 09/22/2019 | 115 **H** | ARC |  |
-| 3 | 03/10/2020 | 118 **H** | ARC |  |
-| 4 | 02/28/2021 | 124 **H** | ARC |  |
-| 5 | 08/11/2021 | 138 **H** | ARC |  |
-| 6 | 02/03/2022 | 143 **H** | ARC |  |
-| 7 | 03/04/2022 | 106 **H** | LAB | reported 5.9 mmol/L; lab flagged NORMAL vs 3.9-6.1 mmol/L |
-| 8 | 04/03/2022 | 147 **H** | LAB |  |
-| 9 | 06/15/2022 | 150 **H** | LAB | reported 8.3 mmol/L |
-| 10 | 09/22/2022 | 152 **H** | LAB |  |
-| 11 | 01/10/2023 | 164 **H** | LAB | reported 9.1 mmol/L |
-| 12 | 05/18/2023 | 162 **H** | LAB |  |
-| 13 | 08/10/2023 | 203 **H** | HOSP |  |
-| 14 | 08/14/2023 | 179 **H** | HOSP |  |
-| 15 | 11/02/2023 | 133 **H** | LAB | reported 7.4 mmol/L |
-| 16 | 12/14/2023 | 178 **H** | TX |  |
-| 17 | 03/14/2024 | 168 **H** | LAB |  |
-
-
-**Unit handling:** four lab results were reported **without units, in mmol/L** (03/04/2022, 06/15/2022, 01/10/2023, 11/02/2023). This was done per the lab's own footnote. They were converted at ×18.016 to plot on one axis, and the **original value is shown in Notes**. No other values were altered.
-
-**Reference range (adult, fasting):** 70–99 mg/dL (3.9–5.5 mmol/L). 100–125 is impaired fasting glucose and ≥126 is diabetic range. **Fasting status is not documented for most lab draws**, so some values may be non-fasting.
-
-**Clinical observation — DECLINING (rising glucose).** Lab glucose climbed from 108 (2019) to the 160s–170s in 2023–2024, with a peak of 203 at the 08/2023 admission. Every value is above range. This matches the HbA1c trend.
-- 03/04/2022 (5.9 mmol/L ≈ 106 mg/dL) was flagged **NORMAL** by the lab against its mmol/L range, yet it is above the same lab's 70–100 mg/dL range.
-- 11/02/2023 (≈133) is unusually low compared with its neighbours.
-
-**Treatment recommendations (multiple out-of-range values):** Follow the HbA1c plan in §6 (CGM, SGLT2i/GLP-1 RA, regimen reconciliation). In addition, **ask the lab to report all glucose in mg/dL with units** and to **record fasting status** on requisitions.
-
-## 8. Blood glucose — clinic point-of-care (nursing log + endocrinology visits)
-
-```diff
-  Glucose, POC (mg/dL)
--          180 |                                    X     X.
--          170 |                  X.             ?     ?    .X..X
--          160 |           .X    .  .X..X..X
--          150 |?  X..X..X.  .. .
--          140 |               X
--          130 |
--          120 |
--          110 |
--          100 |
-        ULN 99 :- - - - - - - - - - - - - - - - - - - - - - - - -
-+           90 |                              ?
-    no data -> |
-
-               ++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-         month  03 04 06 09 01 01 02 03 05 05 07 08 09 11 01 03 05
-          year  22 22 22 22 23 23 23 23 23 23 23 23 23 23 24 24 24
-```
-
-| # | Date | Glucose, POC (mg/dL) | Source(s) | Notes |
-|---|---|---|---|---|
-| 1 | 03/04/2022 | 147 ? | VIT | lab same day 5.9 mmol/L (~106); identical to 04/04 value |
-| 2 | 04/04/2022 | 147 **H** | VIT |  |
-| 3 | 06/15/2022 | 149 **H** | VIT | logged "I49"; PCP note confirms 149 |
-| 4 | 09/22/2022 | 152 **H** | VIT |  |
-| 5 | 01/10/2023 | 162 **H** | VIT |  |
-| 6 | 01/10/2023 (PM) | 138 **H** | VIT | PM recheck |
-| 7 | 02/22/2023 | 171 **H** | ENDO |  |
-| 8 | 03/15/2023 | 158 **H** | VIT |  |
-| 9 | 05/18/2023 | 162 **H** | VIT |  |
-| 10 | 05/30/2023 | 158 **H** | ENDO |  |
-| 11 | 07/14/2023 | 91 ? | VIT | suspected wrong-patient row |
-| 12 | 08/12/2023 | 171 ? | VIT | patient was inpatient 8/10-8/14 |
-| 13 | 09/06/2023 | 176 **H** | ENDO |  |
-| 14 | 11/02/2023 | 168 ? | VIT | lab same day 7.4 mmol/L (~133) |
-| 15 | 01/25/2024 | 175 **H** | VIT |  |
-| 16 | 03/14/2024 | 168 **H** | VIT |  |
-| 17 | 05/09/2024 | 174 **H** | VIT |  |
-
-
-**Reference range:** as in §7 (fasting 70–99 mg/dL). Endocrinology targets pre-meal glucose of 80–130 mg/dL (the glargine titration rule is "FBG >130").
-
-**Clinical observation — DECLINING (rising glucose).** Valid clinic values rose from 147–152 (2022) to mostly **158–176 (2023–2024)**, plus one PM recheck of 138. None are in range. Endocrinology also notes that the home log shows "frequent 180–220, several >250" after the hospitalization (no dates or values given, so not plotted).
-- The 07/14/2023 value (91) is from a suspected wrong-patient row.
-- The 08/12/2023 value was logged while the patient was an inpatient.
-- The 03/04/2022 and 11/02/2023 values conflict with same-day lab results. All four are marked `?`.
-- On most other dates the "POC" value **exactly equals the lab value**, so this column may be **copied from lab results rather than measured independently**.
-
-**Treatment recommendations (multiple out-of-range values):** Same plan as §6. Also **clarify what the nursing-log glucose column represents** (fingerstick vs. transcribed lab value) so the two data streams aren't double-counted.
-
----
-# Part C — Hematology
-
-## 9. Complete Blood Count (CBC) — Hemoglobin, Hematocrit, WBC, Platelets
-
-```diff
-  Hemoglobin (g/dL)
-+         15.0 |o
-+         14.5 | ..
-+         14.0 |   o..o
-+         13.5 |       .
-      LLN 13.5 :- - - - - - - - - - - - - - - - - - - - - - - - -
--         13.0 |        .
--         12.5 |         X
--         12.0 |            ?  X
--         11.5 |                ..
--         11.0 |                  X..X.
--         10.5 |                       .X..X.
--         10.0 |                             .X..X..X..X.
--          9.5 |                                         .X..X..X
--          9.0 |
-    no data -> |
-
-  Hematocrit (%)
-+         44.0 |
-+         42.0 |
-        LLN 41 :- - - - - - - - - - - - - - - - - - - - - - - - -
--         40.0 |
--         38.0 |
--         36.0 |            X
--         34.0 |
--         32.0 |
--         30.0 |                                       X
--         28.0 |
-    no data -> |~  ~  ~  ~     ~  ~  ~  ~  ~  ~  ~  ~     ~  ~  ~
-
-  WBC (K/uL)
--         12.0 |
-      ULN 11.0 :- - - - - - - - - - - - - - - - - - - - - - - - -
-+         10.0 |
-+          8.0 |      o     o                          o
-+          6.0 |
-       LLN 4.5 :- - - - - - - - - - - - - - - - - - - - - - - - -
--          4.0 |
-    no data -> |~  ~     ~     ~  ~  ~  ~  ~  ~  ~  ~     ~  ~  ~
-
-  Platelets (K/uL)
-+          260 |
-+          240 |
-+          220 |            o
-+          200 |                                       o
-+          180 |
-+          160 |
-       LLN 150 :- - - - - - - - - - - - - - - - - - - - - - - - -
--          140 |
-    no data -> |~  ~  ~  ~     ~  ~  ~  ~  ~  ~  ~  ~     ~  ~  ~
-
-               ++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-         month  02 03 02 02 06 07 11 01 04 05 08 10 11 12 01 03 04
-          year  19 20 21 22 22 22 22 23 23 23 23 23 23 23 24 24 24
-```
-
-| # | Date | Hemoglobin (g/dL) | Hematocrit (%) | WBC (K/µL) | Platelets (K/µL) | Source(s) | Notes |
-|---|---|---|---|---|---|---|---|
-| 1 | 02/14/2019 | 14.8 | — *(gap)* | — *(gap)* | — *(gap)* | ARC |  |
-| 2 | 03/10/2020 | 14.2 | — *(gap)* | — *(gap)* | — *(gap)* | ARC |  |
-| 3 | 02/28/2021 | 14.0 | — *(gap)* | 7.1 | — *(gap)* | ARC |  |
-| 4 | 02/03/2022 | 12.4 **L** | — *(gap)* | — *(gap)* | — *(gap)* | ARC |  |
-| 5 | 06/15/2022 | 11.8 ? | 35.4 **L** | 7.2 | 212 | LAB | PCP: "please verify"; processing delay; another note cites 12.2 |
-| 6 | 07/28/2022 | 12.0 **L** | — *(gap)* | — *(gap)* | — *(gap)* | NEPH |  |
-| 7 | 11/03/2022 | 11.2 **L** | — *(gap)* | — *(gap)* | — *(gap)* | NEPH |  |
-| 8 | 01/10/2023 | 10.9 **L** | — *(gap)* | — *(gap)* | — *(gap)* | LAB |  |
-| 9 | 04/04/2023 | 10.7 **L** | — *(gap)* | — *(gap)* | — *(gap)* | NEPH |  |
-| 10 | 05/18/2023 | 10.4 **L** | — *(gap)* | — *(gap)* | — *(gap)* | LAB |  |
-| 11 | 08/10/2023 | 9.9 **L** | — *(gap)* | — *(gap)* | — *(gap)* | HOSP |  |
-| 12 | 10/10/2023 | 10.0 **L** | — *(gap)* | — *(gap)* | — *(gap)* | NEPH |  |
-| 13 | 11/02/2023 | 10.1 **L** | — *(gap)* | — *(gap)* | — *(gap)* | LAB |  |
-| 14 | 12/14/2023 | 9.9 **L** | 30.1 **L** | 7.8 | 198 | TX |  |
-| 15 | 01/30/2024 | 9.5 **L** | — *(gap)* | — *(gap)* | — *(gap)* | CARD |  |
-| 16 | 03/14/2024 | 9.7 **L** | — *(gap)* | — *(gap)* | — *(gap)* | LAB |  |
-| 17 | 04/17/2024 | 9.4 **L** | — *(gap)* | — *(gap)* | — *(gap)* | NEPH | ESA started 04/19/2024 |
-
-
-**Reference ranges (adult male, 60–65 y):** Hemoglobin 13.5–17.5 g/dL (WHO defines anemia in men as <13.0). Hematocrit 41–53%. WBC 4.5–11.0 K/µL. Platelets 150–400 K/µL. RBC 4.5–5.9 M/µL and MCV 80–100 fL are single values (§14). **KDIGO ESA guidance:** do not intentionally raise Hgb above 11.5 g/dL.
-
-**Clinical observation — HEMOGLOBIN DECLINING; WBC/PLATELETS STABLE/NORMAL.**
-- Hemoglobin fell **14.8 → 9.4 g/dL** over 5 years. The first low value was 12.4 on 02/2022, and it has fallen ~1.3 g/dL per year since. Hematocrit fell 35.4 → 30.1%.
-- WBC (7.1–7.8) and platelets (198–212) are normal, so this is an **isolated anemia**. The only indices (12/2023) are **normocytic** (MCV 91), which fits anemia of CKD. A normal MCV does **not** exclude iron deficiency in CKD.
-- Oral iron started 06/2022, and **epoetin alfa started 04/19/2024**.
-- **No ferritin, TSAT, iron/TIBC, reticulocyte, B12 or folate results exist in the records.** The 06/15/2022 value (11.8) is marked `?` because the PCP asked for it to be verified.
-
-**Treatment recommendations (multiple out-of-range values):**
-1. **Obtain iron studies now**: ferritin, TSAT, plus reticulocyte count, B12, and folate. KDIGO 2012 anemia guidance is to assess and correct iron status **before/with ESA**: give iron if TSAT ≤30% and ferritin ≤500 ng/mL. **IV iron** may be preferable given nausea and the uncertain response to oral iron.
-2. If **iron deficiency is confirmed in a 65-year-old man, evaluate for GI blood loss** (colonoscopy/EGD as indicated, and confirm colorectal-cancer screening status).
-3. **ESA safety:** check Hgb every 2–4 weeks during initiation and **target ≤11.5 g/dL**. ESA can **worsen hypertension**, which is already uncontrolled (§10), so monitor BP closely.
-4. **Retrieve the hematology consult notes** (referral 06/15/2022); none were received.
-
----
-# Part D — Vital signs
-
-## 10. Blood pressure (systolic / diastolic)
-
-```diff
-  Systolic BP (mmHg)
--          185 |                              X
--          180 |
--          175 |
--          170 |                                         .X.   .X..X
--          165 |                                 ?     X.   .X.
--          160 |X        X.         .X..X             .
--          155 | ..    ..  .X.   .X.                 .
--          150 |   X..X       .X.                   X
--          145 |
--          140 |
--          135 |
--          130 |
--          125 |
--          120 |                           ?
-   normal <120 :- - - - - - - - - - - - - - - - - - - - - - - - - -
-+          115 |
-    no data -> |
-
-  Diastolic BP (mmHg)
--          115 |
--          110 |                              X
--          105 |                                         .X.   .X..X
--          100 |         X.         .X..X        ?    .X.   .X.
--           95 |X..X.  ..  .X..X..X.                X.
--           90 |     .X
--           85 |
--           80 |
-    normal <80 :- - - - - - - - - - - - - - - - - - - - - - - - - -
-+           75 |                           ?
-    no data -> |
-
-               ++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-         month  03 04 06 09 01 01 03 05 05 07 08 08 08 11 01 01 03 05
-          year  22 22 22 22 23 23 23 23 23 23 23 23 23 23 24 24 24 24
-```
-
-| # | Date | Systolic BP (mmHg) | Diastolic BP (mmHg) | Source(s) | Notes |
-|---|---|---|---|---|---|
-| 1 | 03/04/2022 | 158 **H** | 96 **H** | VIT |  |
-| 2 | 04/04/2022 | 152 **H** | 94 **H** | VIT | BP logged "I52/94"; PCP amended note confirms 152/94 |
-| 3 | 06/15/2022 | 148 **H** | 92 **H** | VIT |  |
-| 4 | 09/22/2022 | 162 **H** | 98 **H** | VIT | HR logged "8O"; PCP note confirms 80 |
-| 5 | 01/10/2023 | 154 **H** | 96 **H** | VIT |  |
-| 6 | 01/10/2023 (PM) | 151 **H** | 94 **H** | VIT | PM recheck |
-| 7 | 03/15/2023 | 156 **H** | 97 **H** | VIT |  |
-| 8 | 05/18/2023 | 160 **H** | 99 **H** | VIT |  |
-| 9 | 05/30/2023 | 160 **H** | 99 **H** | ENDO | identical to 05/18 reading |
-| 10 | 07/14/2023 | 122 ? | 78 ? | VIT | suspected wrong-patient row |
-| 11 | 08/10/2023 | 184 **H** | 112 **H** | HOSP | ED, hypertensive urgency |
-| 12 | 08/12/2023 | 164 ? | 102 ? | VIT | patient was inpatient 8/10-8/14 |
-| 13 | 08/14/2023 | 148 **H** | 94 **H** | HOSP | discharge |
-| 14 | 11/02/2023 | 166 **H** | 101 **H** | VIT |  |
-| 15 | 01/25/2024 | 168 **H** | 104 **H** | VIT |  |
-| 16 | 01/30/2024 | 166 **H** | 100 **H** | CARD | R arm; L arm 164/98 |
-| 17 | 03/14/2024 | 172 **H** | 106 **H** | VIT |  |
-| 18 | 05/09/2024 | 169 **H** | 103 **H** | VIT |  |
-
-
-**Reference range (adults, all ages):** Normal <120/<80 mmHg (ACC/AHA 2017). 120–129/<80 is elevated, 130–139/80–89 is stage 1, and ≥140/≥90 is stage 2. **Patient-specific targets:** **<140/90 is a cardiology condition for transplant listing.** KDIGO 2021 recommends SBP <120 if tolerated, and ADA recommends <130/80.
-
-**Clinical observation — DECLINING (worsening hypertension).**
-- Every valid reading is **stage 2**. BP rose from 148–162/92–98 (2022) to **166–172/100–106 (2024)**.
-- There was **hypertensive urgency at 184/112 (08/10/2023)**.
-- This is **resistant hypertension**: above goal on lisinopril 40 mg + amlodipine 10 mg + furosemide.
-- End-organ effects are already present: **LVH, LVEF 60% → 52%, grade 1 diastolic dysfunction, BNP 186**, and rising proteinuria.
-- The 07/14/2023 reading (122/78) is from a suspected wrong-patient row, and 08/12/2023 was logged during hospitalization (both `?`). The 05/30/2023 endocrine reading is identical to 05/18/2023 (possible copy-forward).
-
-**Treatment recommendations (multiple out-of-range values):**
-1. **Confirm with home BP monitoring or 24-h ambulatory BP, and assess adherence.** The dispensing record shows amlodipine filled only once (03/2022), and it may be incomplete.
-2. **Optimize volume:** consider twice-daily or higher-dose loop diuretic for eGFR ~30 with edema, and dietary sodium <2 g/day. Note the sodium load from bicarbonate.
-3. Add a fourth agent. **Chlorthalidone** works even in advanced CKD (CLICK trial) and **also lowers K⁺**; monitor Na⁺, K⁺, creatinine, and glucose. Alternatively, or in addition, consider a **beta-blocker** (e.g., carvedilol) given LVH and mildly reduced EF. **Avoid spironolactone/MRAs while K⁺ ≥5.5.**
-4. Re-check BP 2–4 weeks after each change, and **watch for an ESA-related BP rise**.
-
-## 11. Weight (and BMI context)
-
-```diff
-  Weight (lb)
--          220 |
--          215 |        .X
--          210 |X..X..X.  ..
--          205 |            X..X..X.          ?  X.
--          200 |                    .X..X          .X..X..X..X..X..X
--          195 |
--          190 |
--          185 |
--          180 |
-        BMI 25 :- - - - - - - - - - - - - - - - - - - - - - - - - -
-+          175 |
-+          170 |
-+          165 |                           ?
-+          160 |
-    no data -> |
-
-               ++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-         month  03 04 06 09 01 01 03 05 05 07 08 11 01 01 01 03 05 05
-          year  22 22 22 22 23 23 23 23 23 23 23 23 24 24 24 24 24 24
-```
-
-| # | Date | Weight (lb) | Source(s) | Notes |
-|---|---|---|---|---|
-| 1 | 03/04/2022 | 212 **H** | VIT |  |
-| 2 | 04/04/2022 | 209 **H** | VIT | BP logged "I52/94"; PCP amended note confirms 152/94 |
-| 3 | 06/15/2022 | 208 **H** | VIT |  |
-| 4 | 09/22/2022 | 215 **H** | VIT | HR logged "8O"; PCP note confirms 80 |
-| 5 | 01/10/2023 | 206 **H** | VIT |  |
-| 6 | 01/10/2023 (PM) | 206 **H** | VIT | PM recheck |
-| 7 | 03/15/2023 | 204 **H** | VIT |  |
-| 8 | 05/18/2023 | 202 **H** | VIT |  |
-| 9 | 05/30/2023 | 202 **H** | ENDO |  |
-| 10 | 07/14/2023 | 165 ? | VIT | suspected wrong-patient row |
-| 11 | 08/12/2023 | 205 ? | VIT | patient was inpatient 8/10-8/14 |
-| 12 | 11/02/2023 | 203 **H** | VIT |  |
-| 13 | 01/18/2024 | 200 **H** | ENDO |  |
-| 14 | 01/25/2024 | 201 **H** | VIT |  |
-| 15 | 01/30/2024 | 201 **H** | CARD | BMI 28.0 documented |
-| 16 | 03/14/2024 | 200 **H** | VIT |  |
-| 17 | 05/09/2024 | 199 **H** | VIT |  |
-| 18 | 05/14/2024 | 199 **H** | ENDO |  |
-
-
-**Reference range:** Height is documented as 5'11" (PCP 03/2022, cardiology 01/2024). A normal BMI of 18.5–24.9 at that height is **≈133–179 lb**, which is the boundary used for row colour. BMI is documented once (28.0 on 01/30/2024). Where other BMIs are mentioned here, they are arithmetic from the recorded weight and height, not new data.
-
-**Clinical observation — DECLINING (unintentional weight loss), still overweight.** Weight fell from **212–215 lb (2022, BMI ~30) to 199 lb (05/2024, BMI ~27.8)**, about a 6–7% loss. It is accompanied by poor appetite, nausea, and falling albumin (§5).
-- The 09/2022 peak (215 lb) coincided with new leg edema, so **fluid shifts confound this trend**.
-- The 07/14/2023 value (165 lb, i.e. −37 lb in 8 weeks and then +40 lb in 4 weeks) is physiologically implausible and is marked `?`.
-
-**Treatment recommendations (multiple out-of-range values):** **Do not pursue intentional weight loss.** Despite BMI >25, the pattern points to possible protein-energy wasting. Instead: renal dietitian assessment (§5), weigh at each visit with an edema assessment to separate fluid from tissue change, and treat drivers of anorexia (acidosis, uremia, nausea).
-
-## 12. Heart rate, oxygen saturation, temperature
-
-```diff
-  Heart rate (bpm)
-+          100 |
-+           95 |
-+           90 |                                      .o.
-+           85 |           .o.      .o     ?  o..o..o.   .o
-+           80 |o..o.   .o.   .o..o.
-+           75 |     .o.
-+           70 |                        ?
-+           65 |
-+           60 |
-    no data -> |
-
-               ++--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-         month  03 04 06 09 01 01 03 05 07 08 11 01 01 03 05
-          year  22 22 22 22 23 23 23 23 23 23 23 24 24 24 24
-```
-
-| # | Date | Heart rate (bpm) | Source(s) | Notes |
-|---|---|---|---|---|
-| 1 | 03/04/2022 | 78 | VIT |  |
-| 2 | 04/04/2022 | 82 | VIT | BP logged "I52/94"; PCP amended note confirms 152/94 |
-| 3 | 06/15/2022 | 76 | VIT |  |
-| 4 | 09/22/2022 | 80 | VIT | HR logged "8O"; PCP note confirms 80 |
-| 5 | 01/10/2023 | 84 | VIT |  |
-| 6 | 01/10/2023 (PM) | 81 | VIT | PM recheck |
-| 7 | 03/15/2023 | 79 | VIT |  |
-| 8 | 05/18/2023 | 83 | VIT |  |
-| 9 | 07/14/2023 | 70 ? | VIT | suspected wrong-patient row |
-| 10 | 08/12/2023 | 86 ? | VIT | patient was inpatient 8/10-8/14 |
-| 11 | 11/02/2023 | 85 | VIT |  |
-| 12 | 01/25/2024 | 87 | VIT |  |
-| 13 | 01/30/2024 | 84 | CARD |  |
-| 14 | 03/14/2024 | 88 | VIT |  |
-| 15 | 05/09/2024 | 86 | VIT |  |
-
-**Reference range:** 60–100 bpm (adult). **Observation — STABLE, within range, mild upward drift.** Heart rate rose from 76–82 (2022) to 84–88 (2024). The drift may reflect anemia or deconditioning. All values are normal, so no treatment recommendation is triggered. The `8O` on 09/22/2022 was read as 80, confirmed by the PCP note.
-
-```diff
-  SpO2 (%)
-+          100 |
-+           99 |                        ?
-+           98 |     .o
-+           97 |o..o.  ..  .o..o..o.
-+           96 |         o.         .o
-+           95 |                           ?  o..o..o.   .o
-        LLN 95 :- - - - - - - - - - - - - - - - - - - - - -
--           94 |                                      .X.
--           93 |
-    no data -> |
-
-               ++--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-         month  03 04 06 09 01 01 03 05 07 08 11 01 01 03 05
-          year  22 22 22 22 23 23 23 23 23 23 23 24 24 24 24
-```
-
-| # | Date | SpO2 (%) | Source(s) | Notes |
-|---|---|---|---|---|
-| 1 | 03/04/2022 | 97 | VIT |  |
-| 2 | 04/04/2022 | 97 | VIT | BP logged "I52/94"; PCP amended note confirms 152/94 |
-| 3 | 06/15/2022 | 98 | VIT |  |
-| 4 | 09/22/2022 | 96 | VIT | HR logged "8O"; PCP note confirms 80 |
-| 5 | 01/10/2023 | 97 | VIT |  |
-| 6 | 01/10/2023 (PM) | 97 | VIT | PM recheck |
-| 7 | 03/15/2023 | 97 | VIT |  |
-| 8 | 05/18/2023 | 96 | VIT |  |
-| 9 | 07/14/2023 | 99 ? | VIT | suspected wrong-patient row |
-| 10 | 08/12/2023 | 95 ? | VIT | patient was inpatient 8/10-8/14 |
-| 11 | 11/02/2023 | 95 | VIT |  |
-| 12 | 01/25/2024 | 95 | VIT |  |
-| 13 | 01/30/2024 | 95 | CARD |  |
-| 14 | 03/14/2024 | 94 **L** | VIT |  |
-| 15 | 05/09/2024 | 95 | VIT |  |
-
-**Reference range:** 95–100% on room air (adult). **Observation — mild DECLINE.** SpO₂ fell from 96–98% (2022) to **94–95% (2024)**. Only **one** value is below range (94% on 03/14/2024), so no formal recommendation is triggered. Given exertional dyspnea, BNP 186, edema, and EF 52%, a **volume-status assessment** at the next visit is worthwhile.
-
-```diff
-  Temperature (F)
-+         99.0 |
-+         98.8 |
-+         98.6 |                        ?
-+         98.4 |      o
-+         98.2 |o.  .. ..         o..o              o.
-+         98.0 |  .o     o.      .         ?  o.  ..  .o
-+         97.8 |           .o.  .               .o
-+         97.6 |              .o
-+         97.4 |
-+         97.2 |
-+         97.0 |
-    no data -> |
-
-               ++--+--+--+--+--+--+--+--+--+--+--+--+--+
-         month  03 04 06 09 01 01 03 05 07 08 11 01 03 05
-          year  22 22 22 22 23 23 23 23 23 23 23 24 24 24
-```
-
-| # | Date | Temperature (°F) | Source(s) | Notes |
-|---|---|---|---|---|
-| 1 | 03/04/2022 | 98.2 | VIT |  |
-| 2 | 04/04/2022 | 97.9 | VIT | BP logged "I52/94"; PCP amended note confirms 152/94 |
-| 3 | 06/15/2022 | 98.4 | VIT |  |
-| 4 | 09/22/2022 | 98.1 | VIT | HR logged "8O"; PCP note confirms 80 |
-| 5 | 01/10/2023 | 97.8 | VIT |  |
-| 6 | 01/10/2023 (PM) | 97.6 | VIT | PM recheck |
-| 7 | 03/15/2023 | 98.3 | VIT |  |
-| 8 | 05/18/2023 | 98.2 | VIT |  |
-| 9 | 07/14/2023 | 98.6 ? | VIT | suspected wrong-patient row |
-| 10 | 08/12/2023 | 98.0 ? | VIT | patient was inpatient 8/10-8/14 |
-| 11 | 11/02/2023 | 98.1 | VIT |  |
-| 12 | 01/25/2024 | 97.7 | VIT |  |
-| 13 | 03/14/2024 | 98.3 | VIT |  |
-| 14 | 05/09/2024 | 98.1 | VIT |  |
-
-**Reference range:** ≈97.0–99.0 °F oral (adults; older adults often run lower). **Observation — STABLE, all values normal** (valid readings 97.6–98.4 °F). No action needed.
----
-# Part E — Markers requested but not available, and single-timepoint results
-
-## 13. Markers with NO data in the uploaded records (no chart possible)
-
-| Marker group | Status in records | Why it matters / suggested action |
+**CMP data table.** † = glucose reported in mmol/L without units (per `lab_results.csv` footnote); shown converted to mg/dL (x 18.016), with the original value in Notes.
+
+| Date       | Glu      | BUN    | Cr       | eGFR   | Na     | K                   | CO2    | Alb     | Ca     | Source   | Notes                                                                                                |
+|------------|----------|--------|----------|--------|--------|---------------------|--------|---------|--------|----------|------------------------------------------------------------------------------------------------------|
+| 2019-02-14 | 🔴 108H  | 🟢 14  | 🟢 1.12  | 🟢 70  | —      | 🟢 4.1              | —      | —       | —      | ARC      |                                                                                                      |
+| 2019-09-22 | 🔴 115H  | —      | 🟢 1.16  | 🟢 68  | —      | —                   | —      | —       | —      | ARC      |                                                                                                      |
+| 2020-03-10 | 🔴 118H  | —      | 🟢 1.19  | 🟢 66  | 🟢 139 | 🟢 4.0              | —      | —       | —      | ARC      |                                                                                                      |
+| 2020-09-18 | —        | —      | 🟢 1.22  | 🟢 64  | —      | —                   | —      | —       | —      | ARC      | EGFR archive flagged LOW in error                                                                    |
+| 2021-02-28 | 🔴 124H  | —      | 🟢 1.25  | 🟢 62  | —      | —                   | —      | —       | —      | ARC      | EGFR archive flagged LOW in error                                                                    |
+| 2021-08-11 | 🔴 138H  | —      | 🟢 1.29  | 🔴 59L | —      | 🟢 4.4              | —      | —       | —      | ARC      |                                                                                                      |
+| 2022-02-03 | 🔴 143H  | —      | 🟢 1.31  | 🟢 60  | —      | —                   | —      | —       | —      | ARC      | EGFR archive flagged LOW (borderline)                                                                |
+| 2022-03-04 | 🔴 106†H | 🔴 22H | 🟢 1.34  | 🔴 58L | —      | —                   | —      | —       | —      | LAB      | GLU lab flagged NORMAL vs 3.9-6.1 mmol/L range; †5.9 mmol/L converted                                |
+| 2022-04-03 | 🔴 147H  | 🔴 24H | 🔴 1.39H | 🔴 55L | 🟢 138 | 🔴 5.2H             | —      | —       | —      | LAB      | GLU fasting                                                                                          |
+| 2022-06-15 | 🔴 150†H | 🔴 26H | 🔴 1.44H | 🔴 51L | —      | 🟡 3.9?             | —      | —       | —      | LAB/NEPH | †8.3 mmol/L converted; K patient-reported; no K in lab file for this date                            |
+| 2022-07-28 | —        | 🔴 27H | 🔴 1.47H | 🔴 49L | 🟢 137 | 🟢 4.8              | 🟢 22  | 🟢 3.7  | 🟢 9.1 | NEPH     |                                                                                                      |
+| 2022-09-22 | 🔴 152H  | 🔴 28H | 🔴 1.51H | 🔴 48L | —      | 🔴 5.4H             | —      | 🟢 3.6  | —      | LAB      |                                                                                                      |
+| 2022-11-03 | —        | —      | 🔴 1.54H | 🔴 45L | —      | 🔴 5.5H             | 🔴 21L | 🟢 3.5  | —      | NEPH     |                                                                                                      |
+| 2023-01-10 | 🔴 164†H | —      | 🔴 1.58H | 🔴 44L | —      | 🟡 5.6H? / 🟢 5.1   | 🔴 20L | 🔴 3.3L | —      | LAB/PCP  | †9.1 mmol/L converted; K AM; lab: possible hemolysis; K PM point-of-care recheck                     |
+| 2023-02-22 | 🔴 171H  | —      | —        | —      | —      | —                   | —      | —       | —      | ENDO     | GLU fasting                                                                                          |
+| 2023-04-04 | —        | —      | 🔴 1.65H | 🔴 41L | —      | 🔴 5.5H             | 🔴 20L | 🔴 3.2L | —      | NEPH     |                                                                                                      |
+| 2023-05-18 | 🔴 162H  | 🔴 34H | 🔴 1.71H | 🔴 39L | —      | —                   | 🔴 19L | —       | —      | LAB      |                                                                                                      |
+| 2023-05-30 | 🔴 158H  | —      | —        | —      | —      | —                   | —      | —       | —      | ENDO     | GLU fasting                                                                                          |
+| 2023-08-10 | 🔴 203H  | 🔴 48H | 🔴 2.04H | 🔴 32L | —      | 🟡 6.4H? / 🔴 6.1H  | 🔴 15L | —       | —      | HOSP     | CR admission, AKI; EGFR AKI; K outpatient draw; hospital suspects hemolysis; K admission 14:30       |
+| 2023-08-14 | 🔴 179H  | 🔴 40H | 🔴 1.89H | 🔴 35L | —      | 🔴 5.2H             | 🔴 19L | —       | —      | HOSP     | CR discharge; K discharge                                                                            |
+| 2023-09-06 | 🔴 176H  | —      | —        | —      | —      | —                   | —      | —       | —      | ENDO     | GLU fasting                                                                                          |
+| 2023-10-10 | —        | —      | 🔴 1.82H | 🔴 37L | —      | 🔴 5.8H             | 🔴 18L | 🔴 3.0L | —      | NEPH     |                                                                                                      |
+| 2023-11-02 | 🔴 133†H | 🔴 36H | 🔴 1.79H | 🔴 36L | —      | 🔴 5.7H             | 🔴 18L | 🔴 3.1L | —      | LAB      | GLU flow sheet same day: 168; †7.4 mmol/L converted                                                  |
+| 2023-12-14 | 🔴 178H  | 🔴 38H | 🔴 1.84H | 🔴 34L | 🟢 138 | 🔴 5.7H             | 🔴 17L | 🔴 2.9L | 🟢 9.2 | TX       |                                                                                                      |
+| 2024-01-25 | —        | —      | —        | —      | —      | 🟡 5.9H? / 🟡 5.7H? | —      | —       | —      | RX       | K pharmacy-reported; conflicts with PCP 5.7; K PCP chart value cited by pharmacy; conflicts with 5.9 |
+| 2024-01-30 | —        | —      | 🔴 1.93H | —      | —      | 🟡 5.9H?            | —      | —       | —      | CARD     | K cardiology: possible hemolysis                                                                     |
+| 2024-02-10 | —        | —      | —        | —      | —      | 🔴 5.6H             | —      | —       | —      | RX       | K recheck before lisinopril refill                                                                   |
+| 2024-03-14 | 🔴 168H  | 🔴 40H | 🔴 1.89H | 🔴 33L | —      | 🔴 5.8H             | 🔴 17L | 🔴 2.9L | —      | LAB      |                                                                                                      |
+| 2024-04-17 | —        | —      | 🔴 1.95H | 🔴 31L | —      | 🔴 6.0H             | 🔴 16L | 🔴 2.8L | —      | NEPH     |                                                                                                      |
+
+**Reference ranges (adult male, age 60 to 65)**
+
+| Analyte | Range used | Age/sex notes |
 |---|---|---|
-| **Thyroid (TSH, free T4, T3)** | **Absent from all 10 files**, including `endocrine_and_thyroid_notes.txt` | If thyroid tests were done, please upload them. If not, consider a **TSH**: hypothyroidism can contribute to fatigue, anemia, and lipid abnormalities. |
-| **Iron studies (ferritin, iron, TIBC, TSAT)** | Ordered 06/15/2022 (PCP); **no results anywhere**. No hematology notes. | Required to guide iron and ESA therapy (§9). **High priority.** |
-| **Lipid panel** | **Absent**; **no statin on any medication list** | KDIGO (CKD, age ≥50) and ADA (T2D, age 40–75) both recommend statin therapy. Check lipids and **start a statin** (e.g., atorvastatin, which needs no renal adjustment) unless contraindicated. |
-| **Urine albumin-to-creatinine ratio (UACR)** | Absent (only UPCR) | Preferred by KDIGO for staging and risk prediction (§2). |
-| **Alkaline phosphatase, reticulocytes, B12, folate** | Absent | Needed for the CKD–mineral bone disorder (§4) and anemia (§9) work-ups. |
+| Creatinine | 0.74–1.35 mg/dL (LAB, male) | Transplant center uses 0.6–1.2 mg/dL. |
+| eGFR | ≥60 mL/min/1.73m² | KDIGO: <60 means reduced GFR at any age. The average for a healthy man in his 60s is about 85. Stages: G3a 45–59, G3b 30–44, G4 15–29. |
+| BUN | 7–20 mg/dL (LAB) | Transplant center 8–25. Some labs use an upper limit of about 23–24 for adults over 60. |
+| Potassium | 3.5–5.1 mEq/L (LAB) | Transplant center 3.5–5.5. Not age/sex dependent. |
+| Sodium | 136–145 mEq/L (LAB) | Not age/sex dependent. |
+| CO2 (bicarbonate) | 22–29 mEq/L (LAB) | Transplant center 23–29. KDIGO 2024 suggests drug treatment when below 18 (dashed line "treat <18"). |
+| Glucose | 70–99 mg/dL fasting | Fasting status is usually undocumented; for a random sample, <140 is normal. The LAB file also used 70–100 mg/dL and 3.9–6.1 mmol/L (≈70–110 mg/dL). |
+| Albumin | 3.5–5.0 g/dL | Levels are slightly lower in older adults; below 3.5 is still abnormal. |
+| Calcium (total) | 8.5–10.5 mg/dL (TX) | Reported uncorrected. Low albumin makes the total calcium read falsely low. |
 
-## 14. Single-timepoint results (a trend cannot be drawn from one value)
+**Clinical observations**
 
-| Date | Test | Value | Reference (male, 60–65 y) | Status | Source |
-|---|---|---|---|---|---|
-| 12/14/2023 | Chloride | 102 mEq/L | 98–107 | Normal | TX |
-| 12/14/2023 | Magnesium | 1.9 mg/dL | 1.7–2.2 | Normal | TX |
-| 12/14/2023 | Total protein | 6.1 g/dL | 6.0–8.3 | Low-normal | TX |
-| 12/14/2023 | Total bilirubin / ALT / AST | 0.6 mg/dL / 18 U/L / 22 U/L | 0.2–1.2 / 7–56 / 10–40 | Normal | TX |
-| 12/14/2023 | RBC | 3.31 M/µL | 4.5–5.9 | **LOW** | TX |
-| 12/14/2023 | MCV / MCHC | 91 fL / 32.8 g/dL | 80–100 / 32–36 | Normal (normocytic) | TX |
-| 12/14/2023 | 25-OH Vitamin D | 18 ng/mL | 30–100 | **LOW (deficient)** | TX |
-| 12/14/2023 | PRA / ABO / serologies | 4% / A+ / HIV, HBsAg, HCV neg; CMV & EBV IgG pos | — | Informational | TX |
-| 01/30/2024 | BNP | 186 pg/mL | <100 | **HIGH** | CARD |
-| 01/30/2024 | Troponin I / INR | <0.01 ng/mL / 1.0 | <0.04 / 0.8–1.2 | Normal | CARD |
-| 01/30/2024 | Respiratory rate | 16 /min | 12–20 | Normal | CARD |
-| 01/30/2024 | ECG QTc | 448 ms | ≤430 normal; 431–450 borderline (men) | Borderline | CARD |
-| 01/30/2024 | LVEF (echo) | 52% (60% on an undated 2019 echo) | ≥55% | **Mildly reduced, declining** | CARD |
-| 01/30/2024 | Nuclear stress test | No ischemia; 6.1 METs | — | Normal perfusion | CARD |
+- **Creatinine / eGFR / BUN: declining, and the decline is speeding up.** eGFR fell steadily from 70 (02/2019) to 31 (04/2024). That is about 7.5 mL/min per year overall and **about 12.7 mL/min per year since 03/2022**, well above KDIGO's 5 mL/min per year threshold for "rapid progression." There was AKI in 08/2023 (creatinine 2.04, eGFR 32); function recovered to about 35–37 but never back to the pre-AKI level of 39. BUN has risen in parallel (14 to 40; 48 at the AKI). **No eGFR below 30 has been recorded**, so by the numbers the patient is in KDIGO G3b, close to the G4 boundary (see Section 8 on stage labels in the notes).
+- **Potassium: worsening, with sustained high values.** K was 4.0–4.4 in 2019–2021. Since 04/2022, **12 of 14 reliable results are above 5.1**, and **every result since 10/2023 is 5.6 or higher** (latest 6.0 on 04/17/2024). Six values are 🟡 questionable (hemolysis, conflicting reports, or unverified). Even with those set aside, the trend is real. Same-day rechecks have come back lower (5.6 → 5.1 on 01/10/2023; 6.4 → 6.1 on 08/10/2023), so some single high draws are inflated. No repeat is documented after the 6.0 on 04/17/2024.
+- **CO2: worsening metabolic acidosis.** 11 of 12 results are below 22. It has been **18 or lower since 10/2023 and below 18 since 12/2023** (latest 16), even on sodium bicarbonate, which was started 01/2023 and increased 11/2023.
+- **Glucose: consistently high.** All 20 lab/visit values are above 99 mg/dL. Values since 2023 range from 133 to 203, mostly 158–179. See Section 3.
+- **Albumin: declining.** It went from 3.7 to 2.8 g/dL; 7 of 10 results are below 3.5. Likely contributors are urinary protein loss (UPCR 620), poor intake (documented nausea and reduced appetite), and inflammation.
+- **Sodium and calcium: normal, but rarely measured.** Sodium was measured on 4 dates, all 137–139. Calcium was measured **only twice** (9.1, 9.2), which is too few for a patient on calcitriol. Corrected for albumin 2.9 (standard formula, a calculation rather than a measured value), the 12/14/2023 calcium would be about 10.1 mg/dL, near the upper limit.
+
+**Treatment recommendations (several CMP markers were out of range more than once)**
+
+1. **Hyperkalemia, urgent.** Repeat potassium within days on a carefully drawn, non-hemolyzed sample (plasma if available), and get an ECG if it is ≥6.0. To keep renin-angiotensin blockade for kidney protection, consider starting a **potassium binder** (patiromer or sodium zirconium cyclosilicate; note the sodium load of SZC given edema and BP). Refer to a renal dietitian for a low-potassium diet, and check for salt substitutes and potassium-raising drugs. If K stays above 5.5 despite these steps, **reduce lisinopril rather than stop it abruptly**, per KDIGO. Give clear written hold instructions: the patient kept taking lisinopril during the 01/2024 pharmacy hold.
+2. **Kidney protection.** **No SGLT2 inhibitor appears in any medication list.** KDIGO 2022/2024 recommends one for type 2 diabetes with CKD at eGFR ≥20 (strong recommendation), which fits this patient at eGFR 31. Also avoid NSAIDs and minimize IV contrast, and confirm progress on AV access and the transplant timeline (nephrology plans from 04/2023 and 04/2024).
+3. **Metabolic acidosis.** Titrate alkali therapy toward the normal range, while watching the sodium load against BP and edema. Correcting acidosis also lowers potassium. Persistent severe acidosis and hyperkalemia despite treatment are factors nephrology weighs when planning kidney replacement therapy.
+4. **Low albumin.** Get a formal nutrition assessment with a renal dietitian. For diabetes with CKD not on dialysis, KDIGO suggests protein of 0.8 g/kg/day, individualized when malnutrition is present. Look into the nausea and poor appetite: uremia, medications, and gastroparesis are possibilities.
+5. **Calcium monitoring.** Check albumin-corrected or ionized calcium on every draw while calcitriol is used or adjusted.
 
 ---
-# Summary — Immediate risks, comprehensive plan, and data integrity
 
-**Record span:** 02/14/2019 – 05/14/2024 (≈5 y 3 m). **Overall picture:** a 65-year-old man with T2DM and hypertension whose **diabetic kidney disease has progressed rapidly since 2022** (eGFR 58 → 31). All the expected CKD complications have accumulated together: hyperkalemia, metabolic acidosis, hyperphosphatemia with rising PTH, anemia, and hypoalbuminemia. Blood pressure and glycemic control are worsening at the same time. He is a renal-transplant candidate, but **both listing conditions (BP <140/90 and HbA1c <8.0%) are currently unmet.**
+## 2. Complete Blood Count (CBC)
 
-## Immediate risks (highest priority first)
-1. **Hyperkalemia.** K⁺ 6.0 on 04/17/2024, high on 11 of 13 valid draws since 04/2022, and a prior admission for K⁺ 6.1. Lisinopril 40 mg was last dispensed 02/10/2024, and he took it during a pharmacy hold. **No management is documented for the latest value.** Risk: arrhythmia.
-2. **Uncontrolled, resistant stage 2 hypertension** (169/103 on 05/09/2024) with prior hypertensive urgency and established LVH. LVEF has fallen 60 → 52% and BNP is raised. The **newly started ESA may raise BP further.**
-3. **Rapid CKD progression toward G4/G5.** eGFR has fallen ~13 mL/min/yr, with CO₂ 16, phosphorus 6.1, PTH 276, and possible uremic symptoms (anorexia, nausea, confusion in 08/2023). **Dialysis access status is undocumented.**
-4. **Anemia (Hgb 9.4) on a new ESA without documented iron studies.** Risks are ESA under-response, missed iron deficiency or GI blood loss, and ESA-related cardiovascular risk if Hgb overshoots.
-5. **Malnutrition signals:** albumin 2.8 and −13 to −16 lb weight loss with poor appetite.
-6. **Hypoglycemia/hyperglycemia risk.** HbA1c is 8.5–8.7% and may be understated by the ESA. Insulin is used alongside possible repaglinide while GFR falls.
+```text
+Legend: 🟢 within reference range   🔴 outside reference range   🟡 questionable value (see notes)
+        x = drawn/visit on that date but no result for this marker   1 column = 2 months
 
-## Consolidated treatment recommendations (from §§1–11; for provider review)
-| # | Recommendation | Addresses | Priority |
+[1] HEMOGLOBIN (g/dL)  ref 13.5-17.5 (adult male); anemia in men <13.0 (WHO/KDIGO)
+        15.0 |🟢
+        14.5 |
+        14.0 |              🟢        🟢
+        13.5 |
+    LLN 13.5 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        13.0 |
+ anemia 13.0 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        12.5 |                                    🔴
+        12.0 |                                        🟡🔴
+        11.5 |
+        11.0 |                                              🔴🔴
+        10.5 |                                                  🔴🔴
+        10.0 |                                                      🔴🔴🔴
+         9.5 |                                                            🔴🔴
+         9.0 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+ gaps >=6 mo : Feb 2019 -> Mar 2020 (13 mo); Mar 2020 -> Feb 2021 (12 mo); Feb 2021 -> Feb 2022 (11 mo)
+
+[2] HEMATOCRIT (%)  ref 41-53 (adult male)
+        54.0 |
+      ULN 53 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        52.0 |
+        50.0 |
+        48.0 |
+        46.0 |
+        44.0 |
+        42.0 |
+      LLN 41 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        40.0 |
+        38.0 |
+        36.0 |                                        🔴
+        34.0 |
+        32.0 |
+        30.0 |                                                          🔴
+        28.0 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+   no result :                        x
+ gaps >=6 mo : NO RESULTS before Jun 2022 (record starts Feb 2019); Jun 2022 -> Dec 2023 (18 mo)
+
+[3] WBC (K/uL)  ref 4.5-11.0
+        12.0 |
+    ULN 11.0 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        11.0 |
+        10.0 |
+         9.0 |
+         8.0 |                                                          🟢
+         7.0 |                        🟢              🟢
+         6.0 |
+         5.0 |
+     LLN 4.5 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         4.0 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+ gaps >=6 mo : NO RESULTS before Feb 2021 (record starts Feb 2019); Feb 2021 -> Jun 2022 (16 mo); Jun 2022 -> Dec 2023 (18 mo)
+
+[4] PLATELETS (K/uL)  ref 150-400
+         420 |
+     ULN 400 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         400 |
+         380 |
+         360 |
+         340 |
+         320 |
+         300 |
+         280 |
+         260 |
+         240 |
+         220 |                                        🟢
+         200 |                                                          🟢
+         180 |
+         160 |
+     LLN 150 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         140 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+   no result :                        x
+ gaps >=6 mo : NO RESULTS before Jun 2022 (record starts Feb 2019); Jun 2022 -> Dec 2023 (18 mo)
+```
+
+| Date       | Hgb       | Hct      | WBC    | Plt    | Source | Notes                                                                                 |
+|------------|-----------|----------|--------|--------|--------|---------------------------------------------------------------------------------------|
+| 2019-02-14 | 🟢 14.8   | —        | —      | —      | ARC    |                                                                                       |
+| 2020-03-10 | 🟢 14.2   | —        | —      | —      | ARC    |                                                                                       |
+| 2021-02-28 | 🟢 14.0   | —        | 🟢 7.1 | —      | ARC    |                                                                                       |
+| 2022-02-03 | 🔴 12.4L  | —        | —      | —      | ARC    |                                                                                       |
+| 2022-06-15 | 🟡 11.8L? | 🔴 35.4L | 🟢 7.2 | 🟢 212 | LAB    | HGB specimen processing delay; earlier note cites 12.2; HCT same specimen as Hgb 11.8 |
+| 2022-07-28 | 🔴 12.0L  | —        | —      | —      | NEPH   |                                                                                       |
+| 2022-11-03 | 🔴 11.2L  | —        | —      | —      | NEPH   |                                                                                       |
+| 2023-01-10 | 🔴 10.9L  | —        | —      | —      | LAB    |                                                                                       |
+| 2023-04-04 | 🔴 10.7L  | —        | —      | —      | NEPH   |                                                                                       |
+| 2023-05-18 | 🔴 10.4L  | —        | —      | —      | LAB    |                                                                                       |
+| 2023-08-10 | 🔴 9.9L   | —        | —      | —      | HOSP   |                                                                                       |
+| 2023-10-10 | 🔴 10.0L  | —        | —      | —      | NEPH   |                                                                                       |
+| 2023-11-02 | 🔴 10.1L  | —        | —      | —      | LAB    |                                                                                       |
+| 2023-12-14 | 🔴 9.9L   | 🔴 30.1L | 🟢 7.8 | 🟢 198 | TX     |                                                                                       |
+| 2024-01-30 | 🔴 9.5L   | —        | —      | —      | CARD   |                                                                                       |
+| 2024-03-14 | 🔴 9.7L   | —        | —      | —      | LAB    |                                                                                       |
+| 2024-04-17 | 🔴 9.4L   | —        | —      | —      | NEPH   | HGB ESA started 4/19/24                                                               |
+
+**Reference ranges (adult male, 60 to 65).** Hemoglobin 13.5–17.5 g/dL (LAB); WHO and KDIGO define anemia in men as **<13.0 g/dL**, with no separate threshold for older men. Hematocrit 41–53%. WBC 4.5–11.0 K/uL. Platelets 150–400 K/uL. Single values (12/14/2023): RBC **3.31 M/uL (low; ref 4.5–5.9)**, MCV 91 fL (normal 80–100), MCHC 32.8 g/dL (normal 32–36).
+
+**Clinical observations**
+
+- **Hemoglobin: steady decline, 14.8 → 9.4 g/dL.** **All 14 values since 02/2022 are below range.** Notably, there was a **1.6 g/dL drop between 02/2021 (14.0) and 02/2022 (12.4)**, when eGFR was still about 60. CKD usually causes significant anemia only at lower GFR, so iron deficiency or blood loss should be ruled out. The anemia is normocytic (MCV 91), which does not exclude iron deficiency in CKD.
+- **Iron status is unknown.** Iron studies were "ordered" on 06/15/2022. Ferrous sulfate was filled **once** (06/17/2022) with no refills. **No ferritin, TSAT or iron results exist in any uploaded file.** Epoetin alfa was started 04/19/2024 without documented iron studies.
+- Hematocrit is low on both dates (35.4, 30.1). WBC and platelets are normal and stable.
+
+**Treatment recommendations (hemoglobin and hematocrit were out of range more than once)**
+
+1. **Get iron studies now** (ferritin, TSAT), plus B12, folate and a reticulocyte count. KDIGO anemia guidance is to find and correct iron deficiency before or alongside ESA therapy.
+2. **If he is iron deficient, do a GI evaluation** (colonoscopy ± EGD). Iron deficiency in a 65-year-old man needs a source found, and age-appropriate cancer screening is needed for transplant listing anyway.
+3. **Replete iron if needed.** IV iron is often preferred in CKD when oral iron fails or is not tolerated.
+4. **ESA safety.** Check Hgb at least monthly while starting the ESA, and do not push Hgb above 11.5 g/dL (KDIGO). **Watch BP closely**, because ESAs can raise BP and his BP is already uncontrolled (Section 5).
+
+---
+
+## 3. Hemoglobin A1c (diabetes control)
+
+```text
+Legend: 🟢 within reference range   🔴 outside reference range   🟡 questionable value (see notes)
+        x = drawn/visit on that date but no result for this marker   1 column = 2 months
+
+HbA1c (%)  normal <5.7; individualized target lines at 7.0 and 8.0 (transplant threshold)
+         8.7 |                                                        🔴  🔴🔴
+         8.5 |                                                    🔴    🔴    🔴
+         8.3 |                                                    🔴
+         8.1 |                                                🔴
+ listing 8.0 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         7.9 |
+         7.7 |                                            🔴
+         7.5 |                                      🔴
+         7.3 |                                      🔴
+         7.1 |                              🔴    🔴
+   goal <7.0 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         6.9 |
+         6.7 |                        🔴
+         6.5 |              🔴    🔴
+         6.3 |        🔴
+         6.1 |
+         5.9 |🔴
+         5.7 |
+    ULN <5.7 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         5.5 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+   no result :                                        x             x
+ gaps >=6 mo : Feb 2019 -> Sep 2019 (7 mo); Mar 2020 -> Sep 2020 (6 mo)
+```
+
+| Date       | HbA1c % | Source | Notes                           |
+|------------|---------|--------|---------------------------------|
+| 2019-02-14 | 🔴 5.9H | ARC    |                                 |
+| 2019-09-22 | 🔴 6.2H | ARC    |                                 |
+| 2020-03-10 | 🔴 6.4H | ARC    |                                 |
+| 2020-09-18 | 🔴 6.6H | ARC    |                                 |
+| 2021-02-28 | 🔴 6.8H | ARC    |                                 |
+| 2021-08-11 | 🔴 7.0H | ARC    |                                 |
+| 2022-02-03 | 🔴 7.1H | ARC    |                                 |
+| 2022-03-04 | 🔴 7.2H | LAB    | metformin stopped this day      |
+| 2022-04-03 | 🔴 7.4H | LAB    |                                 |
+| 2022-09-22 | 🔴 7.8H | LAB    |                                 |
+| 2023-01-10 | 🔴 8.1H | LAB    |                                 |
+| 2023-02-22 | 🔴 8.2H | ENDO   | point-of-care; glargine started |
+| 2023-05-18 | 🔴 8.3H | LAB    |                                 |
+| 2023-05-30 | 🔴 8.4H | ENDO   |                                 |
+| 2023-09-06 | 🔴 8.6H | ENDO   | aspart added                    |
+| 2023-12-14 | 🔴 8.5H | TX     |                                 |
+| 2024-01-18 | 🔴 8.7H | ENDO   |                                 |
+| 2024-03-14 | 🔴 8.6H | LAB    |                                 |
+| 2024-05-14 | 🔴 8.5H | ENDO   |                                 |
+
+**Reference ranges (adult male, 60 to 65).** Normal <5.7%; prediabetes 5.7–6.4%; diabetes ≥6.5%. **Individual treatment target:** <7.0% is the general ADA goal; **<8.0%** is appropriate for an older adult with multiple comorbidities and is also **the transplant program's listing threshold.**
+
+**Clinical observations**
+
+- **Steadily worsening.** HbA1c rose from 5.9% (02/2019) by about 0.4 points per year to a peak of 8.7% (01/2024). It has **plateaued at 8.5–8.7% since 09/2023** despite adding basal insulin (02/2023) and mealtime insulin (09/2023). **All 9 values since 01/2023 are above the 8.0% transplant threshold.**
+- **Metformin was stopped 03/04/2022 at eGFR 58**, which is above the labeled eGFR limits (full dose allowed at eGFR ≥45; reduced dose at 30–44). HbA1c rose every quarter after that. Restarting it now is **not** advisable given eGFR 31, recent AKI and bicarbonate 16, but the history is relevant context.
+- **HbA1c is less reliable in this patient.** Advanced CKD, anemia, recent ESA start (which pushes HbA1c falsely low), and possible iron deficiency (which can push it falsely high) all distort the result. The 05/14/2024 value was drawn 25 days after ESA start, so true glucose control may be worse than 8.5% suggests.
+
+**Treatment recommendations (all values out of range)**
+
+1. **Start a continuous glucose monitor (CGM).** Endocrinology discussed it 01/18/2024. Use time-in-range and GMI rather than relying on HbA1c alone.
+2. **Add an SGLT2 inhibitor** (same drug as CMP recommendation 2). It is mainly for kidney and heart protection; glucose lowering is modest at eGFR about 30.
+3. **Reconsider a GLP-1 receptor agonist.** Semaglutide has kidney-outcome evidence in T2D with CKD (FLOW trial). Weigh this against his existing nausea, poor appetite, weight loss and low albumin; these may make it unsuitable for now.
+4. **Keep titrating basal/bolus insulin** toward <8.0%, watching for hypoglycemia. Insulin is cleared more slowly as eGFR falls.
+5. Confirm he completed diabetes education (referred 09/06/2023; completion not documented), and **confirm his insulin supply**: no insulin fills appear in the pharmacy record.
+
+---
+
+## 4. CKD mineral-bone markers and proteinuria
+
+```text
+Legend: 🟢 within reference range   🔴 outside reference range   🟡 questionable value (see notes)
+        x = drawn/visit on that date but no result for this marker   1 column = 2 months
+
+PHOSPHORUS (mg/dL)  ref 2.5-4.5 (LLN 2.5 below chart)
+         6.2 |
+         6.0 |                                                              🔴
+         5.8 |                                                          🔴
+         5.6 |                                                    🔴  🔴
+         5.4 |
+         5.2 |                                                🔴🔴
+         5.0 |                                            🔴🔴
+         4.8 |
+         4.6 |
+     ULN 4.5 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         4.4 |
+         4.2 |                                          🟢
+         4.0 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+ gaps >=6 mo : NO RESULTS before Jul 2022 (record starts Feb 2019)
+```
+
+```text
+Legend: 🟢 within reference range   🔴 outside reference range   🟡 questionable value (see notes)
+        x = drawn/visit on that date but no result for this marker   1 column = 2 months
+
+PTH, intact (pg/mL)  ref 10-65 (LLN 10 below chart)
+         280 |                                                              🔴
+         260 |
+         240 |
+         220 |                                                          🔴
+         200 |                                                        🔴
+         180 |
+         160 |
+         140 |
+         120 |                                                  🔴
+         100 |                                              🔴
+          80 |                                          🔴
+      ULN 65 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          60 |
+          40 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+   no result :                                            x   x   x
+ gaps >=6 mo : NO RESULTS before Jul 2022 (record starts Feb 2019); Apr 2023 -> Oct 2023 (6 mo)
+```
+
+```text
+Legend: 🟢 within reference range   🔴 outside reference range   🟡 questionable value (see notes)
+        x = drawn/visit on that date but no result for this marker   1 column = 2 months
+
+URINE PROTEIN/CREATININE RATIO (mg/g)  normal <150; KDIGO A3 >500
+         650 |
+         600 |                                                              🔴
+         550 |                                                        🔴
+     A3 >500 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         500 |
+         450 |
+         400 |                                                  🔴
+         350 |                                              🔴
+         300 |                                          🔴
+         250 |
+         200 |
+         150 |
+    ULN <150 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         100 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+   no result :                                            x   x   x     x
+ gaps >=6 mo : NO RESULTS before Jul 2022 (record starts Feb 2019); Apr 2023 -> Oct 2023 (6 mo); Oct 2023 -> Apr 2024 (6 mo)
+```
+
+| Date       | Phos    | PTH     | UPCR    | Ca     | Source | Notes                  |
+|------------|---------|---------|---------|--------|--------|------------------------|
+| 2022-07-28 | 🟢 4.2  | 🔴 68H  | 🔴 280H | 🟢 9.1 | NEPH   |                        |
+| 2022-09-22 | 🔴 4.9H | —       | —       | —      | LAB    |                        |
+| 2022-11-03 | 🔴 5.0H | 🔴 92H  | 🔴 340H | —      | NEPH   |                        |
+| 2023-01-10 | 🔴 5.2H | —       | —       | —      | LAB    |                        |
+| 2023-04-04 | 🔴 5.3H | 🔴 124H | 🔴 420H | —      | NEPH   | PTH calcitriol started |
+| 2023-05-18 | 🔴 5.5H | —       | —       | —      | LAB    |                        |
+| 2023-10-10 | 🔴 5.6H | 🔴 198H | 🔴 510H | —      | NEPH   |                        |
+| 2023-12-14 | 🔴 5.8H | 🔴 221H | —       | 🟢 9.2 | TX     |                        |
+| 2024-03-14 | 🔴 5.9H | —       | —       | —      | LAB    |                        |
+| 2024-04-17 | 🔴 6.1H | 🔴 276H | 🔴 620H | —      | NEPH   |                        |
+
+**Reference ranges (adult male, 60 to 65).** Phosphorus 2.5–4.5 mg/dL. Intact PTH 10–65 pg/mL; KDIGO does not define an optimal PTH for CKD not on dialysis, and a persistent rise is treated as a concern. Urine protein/creatinine ratio: normal <150 mg/g; KDIGO categories A2 = 150–500 and A3 >500. 25-OH vitamin D 30–100 ng/mL, with deficiency <20 (single value: **18 on 12/14/2023**). These ranges are not age- or sex-specific.
+
+**Clinical observations**
+
+- **Phosphorus: steadily worsening.** 4.2 → 6.1 mg/dL; 9 of 10 results high. It kept rising after sevelamer was started (09/2022) and increased (08/2023).
+- **PTH: severe and accelerating.** 68 → 276 pg/mL (**about 4x the upper limit**); all 6 values high. It kept rising after calcitriol was started (04/2023). **Vitamin D deficiency (18 ng/mL)** has not been treated: no cholecalciferol or ergocalciferol appears in any medication list.
+- **UPCR: steadily worsening.** 280 → 620 mg/g. It crossed into **KDIGO A3 (severe) in 10/2023**. **No urine protein or albumin test exists for 2019–2021**, even though diabetes care calls for one every year.
+
+**Treatment recommendations (all three markers out of range more than once)**
+
+1. **Phosphorus:** renal dietitian, with a focus on phosphate additives in processed food. **Check the actual sevelamer dose and whether he takes it with meals**: the dispensed quantities do not match the documented dose (Section 8). If phosphorus stays high, nephrology can consider changing or adding a binder; KDIGO advises limiting calcium-based binders.
+2. **PTH:** **replete 25-OH vitamin D first** (KDIGO 2017), control phosphorus, then adjust calcitriol only with corrected calcium and phosphorus monitoring. The 10/10/2023 plan to increase calcitriol has no matching pharmacy fill.
+3. **Proteinuria:** SGLT2 inhibitor; renin-angiotensin blockade at the highest dose potassium allows (binder, Section 1); BP control (Section 5). Finerenone is indicated for T2D with CKD and albuminuria but is generally **not started when K >5.0**, so it only becomes an option once potassium is controlled. Track urine albumin/creatinine ratio every 3–6 months.
+
+---
+
+## 5. Vital signs
+
+### 5a. Blood pressure
+
+```text
+Legend: 🟢 within reference range   🔴 outside reference range   🟡 questionable value (see notes)
+        x = drawn/visit on that date but no result for this marker   1 column = 2 months
+
+[1] SYSTOLIC BP (mmHg)  normal <120; goal <130 (DM+CKD); cardiology listing condition <140
+         185 |                                                      🔴
+         180 |
+         175 |
+         170 |                                                            🔴🔴🔴
+         165 |                                                      🟡  🔴🔴
+         160 |                                      🔴    🔴      🔴
+         155 |                                                🔴🔴
+         150 |                                      🔴🔴      🔴    🔴
+         145 |
+         140 |
+listing <140 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         135 |
+         130 |
+   goal <130 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         125 |
+         120 |                                                      🟡
+ normal <120 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         115 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+ gaps >=6 mo : NO RESULTS before Mar 2022 (record starts Feb 2019)
+
+[2] DIASTOLIC BP (mmHg)  normal/goal <80; cardiology listing condition <90
+         113 |                                                      🔴
+         110 |
+         107 |                                                              🔴
+         104 |                                                            🔴  🔴
+         101 |                                                      🟡  🔴🔴
+          98 |                                            🔴    🔴🔴
+          95 |                                      🔴        🔴    🔴
+          92 |                                        🔴
+ listing <90 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          89 |
+          86 |
+          83 |
+          80 |
+  normal <80 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          77 |                                                      🟡
+          74 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+ gaps >=6 mo : NO RESULTS before Mar 2022 (record starts Feb 2019)
+```
+
+**Reference ranges (adult, 60 to 65; not sex-specific).** Normal is <120/<80 (ACC/AHA). The goal for diabetes with CKD is <130/80 (ADA, ACC/AHA); KDIGO 2021 suggests systolic <120 if tolerated. Cardiology's condition for transplant listing is **<140/90**.
+
+**Observation: uncontrolled and rising.** **All 16 reliable readings are above normal and above the listing condition**, ranging from 148/92 to 184/112. BP improved slightly to 148/92 in 06/2022 and has climbed since 01/2023 (154/96 → 172/106 → 169/103). He had hypertensive urgency at 184/112 on 08/10/2023. **There is already heart damage:** LVH on ECG and echo, LVEF 60% → 52%, grade 1 diastolic dysfunction, BNP 186. Worsening edema (furosemide increased 03/2024) and falling SpO2 suggest fluid overload is part of the cause.
+
+**Treatment recommendations**
+
+1. He is already on **maximum-dose amlodipine 10 mg and lisinopril 40 mg**. Add-on options for the prescriber:
+   - **Better loop diuretic dosing.** At eGFR about 30, higher or twice-daily dosing is often needed.
+   - A **beta-blocker** (e.g., carvedilol, given the LVH and falling EF).
+   - **Chlorthalidone**, which is effective in stage 4 CKD (CLICK trial); monitor K, Na and glucose.
+   - **Hydralazine/nitrate.**
+   - Spironolactone is limited by his hyperkalemia.
+2. Start home BP monitoring, review adherence, and limit sodium to <2 g/day. Remember that sodium bicarbonate and SZC add sodium.
+3. **Recheck BP 2–4 weeks after the ESA start (04/19/2024).**
+
+### 5b. Heart rate
+
+```text
+Legend: 🟢 within reference range   🔴 outside reference range   🟡 questionable value (see notes)
+        x = drawn/visit on that date but no result for this marker   1 column = 2 months
+
+HEART RATE (bpm)  ref 60-100
+         102 |
+     ULN 100 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          98 |
+          94 |
+          90 |                                                              🟢
+          86 |                                                🟢    🟡  🟢🟢  🟢
+          82 |                                      🟢    🟢  🟢  🟢
+          78 |                                      🟢🟢        🟢
+          74 |
+          70 |                                                      🟡
+          66 |
+          62 |
+      LLN 60 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          58 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+ gaps >=6 mo : NO RESULTS before Mar 2022 (record starts Feb 2019)
+```
+
+**Reference range (adult, not age/sex-specific):** 60–100 bpm. **Observation:** all values are normal, with a slow upward drift from 76–82 (2022) to 84–88 (2024). That fits worsening anemia and fluid overload. No treatment needed. If a beta-blocker is added, there is room in the heart rate.
+
+### 5c. Weight and BMI
+
+```text
+Legend: 🟢 within reference range   🔴 outside reference range   🟡 questionable value (see notes)
+        x = drawn/visit on that date but no result for this marker   1 column = 2 months
+
+WEIGHT (lb)  height 5'11": BMI 18.5-24.9 = ~133-178 lb (LLN below chart)
+         220 |
+      BMI 30 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         215 |                                            🔴
+         210 |                                      🔴🔴
+         205 |                                                🔴🔴  🟡  🔴
+         200 |                                                    🔴      🔴🔴🔴
+         195 |
+         190 |
+         185 |
+         180 |
+      BMI 25 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+         175 |
+         170 |
+         165 |                                                      🟡
+         160 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+ gaps >=6 mo : NO RESULTS before Mar 2022 (record starts Feb 2019)
+```
+
+**Reference range (male, 5'11"):** BMI 18.5–24.9, which is about **133–178 lb**. BMI 25 ≈ 179 lb and BMI 30 ≈ 215 lb (lines are computed from the documented height; no BMI values were calculated for the patient). The only documented BMI is **28.0 (01/30/2024, cardiology)**. In adults 65 and older, a BMI of 25–27 is not linked to higher mortality.
+
+**Observation:** weight is in the overweight range, so all reliable values are 🔴 by BMI. **The real concern is unintentional loss:** 212 → 199 lb (−13 lb, about 6%) from 03/2022 to 05/2024, alongside falling albumin (3.7 → 2.8), poor appetite and nausea. Because edema has been worsening, fluid is probably hiding some of the true tissue loss. The 09/2022 jump to 215 lb came with leg swelling, so it was probably fluid.
+
+**Treatment recommendation (more than one value out of range): do *not* pursue weight loss.** Start a renal-dietitian nutrition assessment (for example, subjective global assessment), track dry weight, and look into the nausea. His BMI of 28 is already within typical transplant-program limits.
+
+### 5d. Oxygen saturation
+
+```text
+Legend: 🟢 within reference range   🔴 outside reference range   🟡 questionable value (see notes)
+        x = drawn/visit on that date but no result for this marker   1 column = 2 months
+
+SpO2 (%) on room air  ref 95-100
+         100 |
+          99 |                                                      🟡
+          98 |                                        🟢
+          97 |                                      🟢        🟢🟢
+          96 |                                            🟢      🟢
+          95 |                                                      🟡  🟢🟢  🟢
+      LLN 95 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          94 |                                                              🔴
+          93 |
+          92 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+ gaps >=6 mo : NO RESULTS before Mar 2022 (record starts Feb 2019)
+```
+
+**Reference range (adult at sea level, not age/sex-specific):** 95–100% on room air. **Observation:** SpO2 was 96–98% in 2022–early 2023, has been 94–95% since 08/2023, and was **94% on 03/14/2024 (the only low value)**. The slow decline, together with edema, BNP 186 and exertional shortness of breath, fits fluid overload and/or anemia. Only one value is out of range, so no formal recommendation is given; re-examine lungs and volume status at the next visit.
+
+### 5e. Temperature
+
+```text
+Legend: 🟢 within reference range   🔴 outside reference range   🟡 questionable value (see notes)
+        x = drawn/visit on that date but no result for this marker   1 column = 2 months
+
+TEMPERATURE (F)  ref ~97.0-99.0
+        99.2 |
+    ULN 99.0 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        99.0 |
+        98.8 |
+        98.6 |                                                      🟡
+        98.4 |                                        🟢
+        98.2 |                                      🟢          🟢🟢        🟢
+        98.0 |                                      🟢    🟢        🟡  🟢    🟢
+        97.8 |                                                🟢          🟢
+        97.6 |                                                🟢
+        97.4 |
+        97.2 |
+        97.0 |
+    LLN 97.0 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        96.8 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+ gaps >=6 mo : NO RESULTS before Mar 2022 (record starts Feb 2019)
+```
+
+**Reference range (adult):** about 97.0–99.0 °F; older adults often run at the low end. **Observation:** all values are normal and stable (97.6–98.4 °F, excluding the questionable 07/14/2023 entry).
+
+### 5f. Clinic glucose (nursing flow sheet)
+
+```text
+Legend: 🟢 within reference range   🔴 outside reference range   🟡 questionable value (see notes)
+        x = drawn/visit on that date but no result for this marker   1 column = 2 months
+
+CLINIC GLUCOSE, nursing flow sheet (mg/dL)  ref fasting 70-99 (fasting status not recorded)
+         180 |                                                            🔴
+         170 |                                                      🟡  🔴  🔴🔴
+         160 |                                                🔴🔴🔴
+         150 |                                      🔴🔴  🔴
+         140 |                                                🔴
+         130 |
+         120 |
+         110 |
+         100 |
+      ULN 99 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          90 |                                                      🟡
+          80 |
+          70 |
+      LLN 70 +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          60 |
+             +------------+-----------+-----------+-----------+-----------+-----
+              2019        2020        2021        2022        2023        2024
+ gaps >=6 mo : NO RESULTS before Mar 2022 (record starts Feb 2019)
+```
+
+**Reference range:** fasting 70–99 mg/dL; fasting status was not recorded on the flow sheet. **Observation:** all 11 reliable values are high (138–175) and rising. **On dates that also have a lab glucose, the flow-sheet value matches it exactly 4 times and nearly 2 times, and conflicts 2 times.** So the flow sheet may have copied lab values rather than recording separate fingerstick tests (Section 8).
+
+**Treatment recommendation (more than one value out of range):** same plan as Section 3: CGM, SGLT2 inhibitor, and insulin titration to <8.0%. Also have nursing record **fasting status and whether the value is a fingerstick or a copied lab result** at each visit, so this chart becomes usable.
+
+**Vitals data table**
+
+| Date       | SBP               | DBP             | HR            | Temp              | Wt                | SpO2          | FS-Glu            | Source | Notes                                                                               |
+|------------|-------------------|-----------------|---------------|-------------------|-------------------|---------------|-------------------|--------|-------------------------------------------------------------------------------------|
+| 2022-03-04 | 🔴 158H           | 🔴 96H          | 🟢 78         | 🟢 98.2           | 🔴 212H           | 🟢 97         | 🟡 147H?          | VIT    | flow-sheet glucose 147 vs same-day lab 5.9 mmol/L (~106)                            |
+| 2022-04-04 | 🔴 152H           | 🔴 94H          | 🟢 82         | 🟢 97.9           | 🔴 209H           | 🟢 97         | 🔴 147H           | VIT    | BP transcribed "I52" = 152 (confirmed by amended 4/4/22 note)                       |
+| 2022-06-15 | 🔴 148H           | 🔴 92H          | 🟢 76         | 🟢 98.4           | 🔴 208H           | 🟢 98         | 🔴 149H           | VIT    | glucose transcribed "I49"                                                           |
+| 2022-09-22 | 🔴 162H           | 🔴 98H          | 🟢 80         | 🟢 98.1           | 🔴 215H           | 🟢 96         | 🔴 152H           | VIT    | HR transcribed "8O" = 80 (confirmed by 9/22/22 note)                                |
+| 2023-01-10 | 🔴 154H / 🔴 151H | 🔴 96H / 🔴 94H | 🟢 84 / 🟢 81 | 🟢 97.8 / 🟢 97.6 | 🔴 206H / 🔴 206H | 🟢 97 / 🟢 97 | 🔴 162H / 🔴 138H | VIT    | AM; PM recheck                                                                      |
+| 2023-03-15 | 🔴 156H           | 🔴 97H          | 🟢 79         | 🟢 98.3           | 🔴 204H           | 🟢 97         | 🔴 158H           | VIT    |                                                                                     |
+| 2023-05-18 | 🔴 160H           | 🔴 99H          | 🟢 83         | 🟢 98.2           | 🔴 202H           | 🟢 96         | 🔴 162H           | VIT    |                                                                                     |
+| 2023-05-30 | 🔴 160H           | 🔴 99H          | —             | —                 | 🔴 202H           | —             | —                 | ENDO   | endocrinology visit                                                                 |
+| 2023-07-14 | 🟡 122H?          | 🟡 78?          | 🟡 70?        | 🟡 98.6?          | 🟡 165?           | 🟡 99?        | 🟡 91?            | VIT    | entire row inconsistent with patient (37-40 lb lighter); likely wrong patient/entry |
+| 2023-08-10 | 🔴 184H           | 🔴 112H         | —             | —                 | —                 | —             | —                 | HOSP   | ED presentation, hypertensive urgency                                               |
+| 2023-08-12 | 🟡 164H?          | 🟡 102H?        | 🟡 86?        | 🟡 98.0?          | 🟡 205H?          | 🟡 95?        | 🟡 171H?          | VIT    | clinic entry dated while patient was inpatient (8/10-8/14/23)                       |
+| 2023-08-14 | 🔴 148H           | 🔴 94H          | —             | —                 | —                 | —             | —                 | HOSP   | hospital discharge                                                                  |
+| 2023-11-02 | 🔴 166H           | 🔴 101H         | 🟢 85         | 🟢 98.1           | 🔴 203H           | 🟢 95         | 🔴 168H           | VIT    |                                                                                     |
+| 2024-01-18 | —                 | —               | —             | —                 | 🔴 200H           | —             | —                 | ENDO   | endocrinology visit                                                                 |
+| 2024-01-25 | 🔴 168H           | 🔴 104H         | 🟢 87         | 🟢 97.7           | 🔴 201H           | 🟢 95         | 🔴 175H           | VIT    |                                                                                     |
+| 2024-01-30 | 🔴 166H           | 🔴 100H         | 🟢 84         | —                 | 🔴 201H           | 🟢 95         | —                 | CARD   | cardiology; L arm 164/98; RR 16; BMI 28.0 documented                                |
+| 2024-03-14 | 🔴 172H           | 🔴 106H         | 🟢 88         | 🟢 98.3           | 🔴 200H           | 🔴 94L        | 🔴 168H           | VIT    |                                                                                     |
+| 2024-05-09 | 🔴 169H           | 🔴 103H         | 🟢 86         | 🟢 98.1           | 🔴 199H           | 🟢 95         | 🔴 174H           | VIT    |                                                                                     |
+| 2024-05-14 | —                 | —               | —             | —                 | 🔴 199H           | —             | —                 | ENDO   | endocrinology visit                                                                 |
+
+---
+
+## 6. Results with a single time point (no trend possible)
+
+No trend chart is drawn for these, because each has only one dated result (LVEF's earlier value has no date).
+
+| Marker | Value (date, source) | Reference (adult male) | Status |
 |---|---|---|---|
-| 1 | Repeat K⁺ on a non-hemolysed sample; ECG if ≥6.0; start a K⁺ binder (patiromer/SZC); reduce lisinopril only if K⁺ stays ≥6.0; low-K⁺ diet; patient education on holds | §3 | **Urgent** |
-| 2 | Confirm BP out of office (home/ambulatory), check adherence, optimize loop diuretic, limit sodium to <2 g/day, add chlorthalidone (also lowers K⁺) and/or carvedilol. Targets: <140/90 for listing, SBP <120 per KDIGO if tolerated | §10 | **Urgent** |
-| 3 | Start an SGLT2 inhibitor (eGFR ≥20) for kidney, heart, and proteinuria benefit | §1, §2, §6 | High |
-| 4 | Iron studies, retics, B12, folate; iron repletion (consider IV) if TSAT ≤30% / ferritin ≤500; GI evaluation if iron-deficient; ESA target Hgb ≤11.5 with close BP monitoring | §9 | High |
-| 5 | Titrate sodium bicarbonate toward bicarbonate ≥22 | §3, §5 | High |
-| 6 | Confirm GFR with cystatin C (eGFRcr-cys); clarify the lab's eGFR equation | §1 | High |
-| 7 | CGM with GMI/time-in-range; consider a GLP-1 RA (slow titration); reconcile repaglinide vs. aspart; confirm diabetes education | §6–8 | High |
-| 8 | Replete vitamin D (cholecalciferol); reassess calcitriol; verify the sevelamer dose and meal timing; dietitian phosphate counselling; monitor Ca/Phos/ALP/PTH | §4 | Moderate |
-| 9 | Renal dietitian nutrition assessment (protein ~0.8 g/kg/d, no over-restriction); **no intentional weight loss**; assess for uremic symptoms; renally dose metoclopramide | §5, §11 | Moderate |
-| 10 | Lipid panel and statin | §13 | Moderate |
-| 11 | Order UACR; consider TSH | §2, §13 | Routine |
+| Chloride | 102 mEq/L (12/14/2023, TX) | 98–107 | 🟢 |
+| Total protein | 6.1 g/dL (12/14/2023, TX) | 6.0–8.3 | 🟢 low-normal |
+| Total bilirubin / ALT / AST | 0.6 mg/dL / 18 U/L / 22 U/L (12/14/2023, TX) | 0.2–1.2 / 7–56 / 10–40 | 🟢 |
+| Magnesium | 1.9 mg/dL (12/14/2023, TX) | 1.7–2.2 | 🟢 |
+| 25-OH vitamin D | 18 ng/mL (12/14/2023, TX) | 30–100 (deficient <20) | 🔴 L (see Section 4) |
+| BNP | 186 pg/mL (01/30/2024, CARD) | <100 (often higher in CKD) | 🔴 H |
+| Troponin I | <0.01 ng/mL (01/30/2024, CARD) | negative | 🟢 |
+| INR | 1.0 (01/30/2024, CARD) | 0.8–1.2 | 🟢 |
+| QTc | 448 ms (01/30/2024, CARD) | men: ≤430 normal, 431–450 borderline | 🔴 borderline (watch QT-prolonging drugs, e.g. metoclopramide; watch K swings) |
+| Respiratory rate | 16 /min (01/30/2024, CARD) | 12–20 | 🟢 |
+| LVEF (echo) | 60% (2019, no date given) → 52% (01/30/2024, CARD) | male 52–72% (ASE) | 🟢 at the lower limit; cardiology calls it mildly reduced because of the drop |
+| Septum / posterior wall | 1.3 cm / 1.2 cm (01/30/2024, CARD) | male 0.6–1.0 cm | 🔴 LVH |
+| Stress test | No ischemia; 6.1 METs (01/30/2024) | — | 🟢 |
+| Transplant serologies | HIV, HBsAg, HCV negative; CMV IgG and EBV IgG positive; PRA 4%; ABO A+ (12/14/2023) | — | informational |
 
-## Suggested changes to the overall healthcare plan
-- **Run one shared medication reconciliation** across PCP, endocrinology, nephrology, cardiology, and pharmacy. The lists conflict on the sevelamer dose, repaglinide dose and frequency, furosemide dose, epoetin start date, and bicarbonate dose. Insulin and metoclopramide are missing from the dispensing record.
-- **Coordinate lab draws across specialties.** HbA1c and chemistries are duplicated within days or weeks (e.g., 05/18 and 05/30/2023; 12/14/2023, 01/18/2024, 01/30/2024, 03/14/2024). For an anemic patient, a shared monthly lab schedule would reduce blood loss and conflicting values.
-- **Track a transplant-readiness checklist:** BP <140/90 (unmet), HbA1c <8.0% (unmet), cardiology follow-up, vitamin D repletion, nutrition status, tissue typing/crossmatch (pending), and dialysis access.
-- **Set a hyperkalemia safety protocol:** a standing order for a repeat K⁺ within 24–72 h of any value ≥5.5, a clear hold/restart communication pathway between pharmacy and prescriber, and patient education.
-- **Fix data quality:** standardize glucose to mg/dL with units, document fasting status, audit the nursing vitals log for misfiled rows, and obtain the **finalized hospital discharge summary** (HIM ext. 4400) and **hematology notes**.
-- **Increase visit frequency.** Nephrology draws are ~6 months apart (10/2023 → 04/2024) while eGFR falls ~1 mL/min per month. KDIGO suggests monitoring at least every 3–4 months at this stage and risk level.
+## 7. Markers requested but not found in the uploaded files
 
-## Unusual or potentially inaccurate data (identified before finalizing this summary)
-**High impact — affects interpretation or safety**
-1. **Wrong-person data:** living-donor values (T-0241, DOB 03/22/1991: Cr 0.88, K 3.9, BP 118/72, BMI 24.1) are appended to the transplant file. **Excluded.**
-2. **Nursing vitals 07/14/2023** (122/78, HR 70, **165 lb**, SpO₂ 99%, glucose 91) is inconsistent with every surrounding value; a 37-lb swing in weeks is implausible. The date is also the patient's birthday, possibly a registration mix-up. **Suspected wrong-patient row.** Plotted as `?`.
-3. **Nursing vitals 08/12/2023** is dated while the patient was **hospitalized (08/10–08/14/2023)**. Plotted as `?`.
-4. **Endocrine 05/14/2024** calls HbA1c 8.5% "below" the 8.0% transplant threshold. **It is above.**
-5. **eGFR values from 2023 onward are lower than standard equations predict.** Race-free CKD-EPI 2021 gives Cr 1.95 at 65 y ≈37.5 (reported 31), Cr 1.89 ≈38.9 (reported 33), and Cr 1.84 ≈40.2 (reported 34). 2019–2022 values match CKD-EPI 2009 closely. The equation is undocumented. Reported values are plotted unchanged.
-6. **CKD staging mislabelled** against the notes' own eGFRs: PCP 03/04/2022 "Stage 3b" at eGFR 58 (actually 3a); nephrology 10/10/2023 "Stage 4" at 37 (3b); hospital "CKD Stage 4" with discharge eGFR 35 (3b); cardiology "Stage 4 (eGFR ~31–34)" (3b).
-7. **Potassium conflicts and hemolysis:** 01/10/2023 (5.6, possible hemolysis; same-day point-of-care recheck 5.1); 08/2023 outpatient 6.4 (hemolysis suspected, draw date unknown, not plotted); 01/30/2024 (5.9, prolonged tourniquet). The pharmacy record cites **5.9 vs 5.7 for 01/25/2024** with no source lab report (not plotted). A "recheck 5.6" has no draw date; it is noted only at the 02/10/2024 fill. Nephrology's "K 3.9 for 06/15/2022" is **patient-reported only**; no potassium was drawn that day.
-8. **Mixed glucose units:** four glucose values in mmol/L have no units. 5.9 mmol/L (≈106 mg/dL) was flagged NORMAL against the mmol/L range even though it exceeds the same lab's mg/dL range. The nursing-log glucose differs from same-day lab on 03/04/2022 (147 vs ≈106) and 11/02/2023 (168 vs ≈133). Otherwise it mirrors lab values exactly, suggesting it may be transcribed rather than measured.
+- **Thyroid markers (TSH, free T4, T3): none.** `endocrine_and_thyroid_notes.txt` covers only diabetes. The only "thyroid" words in any file refer to **para**thyroid (PTH). I can't chart thyroid trends. If thyroid labs exist, please upload them.
+- **Iron studies (ferritin, TSAT, serum iron, TIBC): none.** Ordered 06/15/2022; no results anywhere.
+- **Hematology visit notes: not included** in the upload. No hematology consult or iron-deficiency workup document was provided.
+- **Never measured in 5 years:** lipid panel, urine albumin/creatinine ratio (only total-protein UPCR from 07/2022 on), B12 (relevant after years of metformin). Also, **no statin appears in any medication list.**
+- **Present but not described in your request:** the cardiology clearance note, a partial *draft* hospital discharge summary, and transplant evaluation labs. All three were used.
 
-**Moderate — medication and record discrepancies**
+---
 
-9. **Sevelamer:** the PCP ordered 800 mg TID (3 tabs/day), but the 09/2022 dispensing was 270 tabs/30 days (9/day). The 08/2023 fill is "1600 mg" (not a standard tablet strength) ×270 and cites "**Phos 5.6**", a value not recorded until **10/10/2023**.
-10. **Repaglinide:** on 02/22/2023 the endocrine note says "2 mg TID … at max". The pharmacy filled 1 mg until 05/20/2023, quantities imply BID, and the labelled maximum is 4 mg per meal (16 mg/day). The note also calls metformin "contraindicated" at eGFR 44; the FDA contraindication threshold is <30.
-11. **Cardiology 01/30/2024 medication list** (patient-reported) includes epoetin and furosemide 40 mg, which were **first dispensed 04/19/2024 and 03/16/2024**.
-12. **Timeline error:** the endocrine 09/06/2023 note says "3 weeks *prior to* hospital admission". The documented admission was 08/10/2023, *before* that visit. Either the date is wrong or a second admission is undocumented.
-13. **Hemoglobin citations:** nephrology (11/03/2022) says "PCP had 11.8 on 9/22"; no Hgb was drawn on 09/22/2022 (11.8 was 06/15/2022). The 06/15/2022 value was itself flagged "please verify" (processing delay; another note cites 12.2). Plotted as `?`.
-14. **Hospital discharge summary** is an unfinalized draft: page 2 (remaining labs, discharge medications) is missing and it is marked "should NOT be used as the final clinical record". Its values are plotted and labelled `HOSP`, but they need verification.
+## 8. Data quality: unusual or probably inaccurate data
 
-**Minor — transcription and formatting**
+**Highest clinical impact**
 
-15. The vitals log has OCR-style character errors: `09:l5`, `I52/94`, `I49`, `8O`. These were resolved against PCP notes as 152/94, 149, and 80. Endocrine BP 160/99 on 05/30/2023 duplicates 05/18/2023 exactly.
-16. Date formats are mixed: the archive uses DD/MM/YYYY, and the lab CSV uses DD/MM for DOB but MM/DD for results. The lab file dates one draw 04/03/2022 while the PCP note says labs were drawn 04/04/2022. HbA1c was repeated 3 times within ~2 months in early 2022, an interval too short to be informative.
-17. The archive is titled "2019–2020", labelled "Period 2019–2021", and contains 02/2022 results. eGFR 64 is flagged LOW although the PCP lab's stated reference is >60 (the archive lists no range). The PCP header says "Age 65 at most recent note", but the patient was 64 on 01/10/2023.
-18. The dispensing record appears incomplete: no insulin, metoclopramide, or calcitriol increase, and no amlodipine refills after 03/2022.
+1. **Another person's data is in the transplant file.** A living-donor evaluation (ID T-0241, DOB 03/22/1991: creatinine 0.88, K 3.9, BP 118/72, BMI 24.1) is attached to this patient's transplant labs. **It was completely excluded.** It should be removed from this patient's chart.
+2. **Endocrinology 05/14/2024 says HbA1c 8.5% is "Below transplant program threshold of 8.0%."** 8.5% is **above** 8.0%. If this wording is copied forward, it could cause a listing error.
+3. **Vitals entry 07/14/2023 probably belongs to someone else:** 165 lb (37–40 lb lighter than every nearby entry), BP 122/78, glucose 91, SpO2 99%. There is no matching visit note, and 07/14 is the patient's birthday, so a DOB may have been entered as the visit date. Shown as 🟡 and excluded from interpretation.
+4. **Vitals entry 08/12/2023 is dated while the patient was in the hospital** (admitted 08/10, discharged 08/14/2023). Either the date or the source is wrong. Shown as 🟡.
+5. **Several potassium values are questionable or conflicting:**
+   - 01/10/2023: 5.6, flagged possible hemolysis; PM recheck 5.1.
+   - 08/10/2023: outpatient 6.4, suspected hemolysis; admission 6.1.
+   - 01/30/2024: 5.9, prolonged tourniquet time.
+   - **01/25/2024: pharmacy says 5.9, PCP chart says 5.7** for the same draw.
+   - **06/15/2022: "K 3.9" is only in the nephrology note (patient recollection)**; the lab file has no potassium for that date.
+6. **CKD stage labels don't match the eGFR values.** "Stage 3b" was used at eGFR 58 (03/04/2022) and 49 (07/28/2022); both are G3a. "Stage 4" has been used since 08/2023 (hospital discharge diagnosis, then nephrology from 10/10/2023) at eGFR 31–37; those are all G3b. No eGFR below 30 is recorded anywhere. Please confirm the stage used for transplant and dialysis documentation.
+7. **Medication record conflicts** (no single reconciled list exists):
+   - Endocrinology documents **insulin glargine and aspart, but the pharmacy record has no insulin fills.**
+   - Cardiology's 01/30/2024 list includes **epoetin and furosemide 40 mg**, but those were first dispensed on **04/19/2024 and 03/16/2024**.
+   - Endocrinology on 02/22/2023 lists "repaglinide 2 mg TID … at max," but 2 mg was first dispensed 05/20/2023 as 60 tablets per 30 days (twice daily). The labeled maximum is 16 mg/day, not 6.
+   - **Sevelamer:** 270 units per 30 days does not match the documented 800 mg TID, and "1600 mg" is not a standard single-tablet strength. The 08/14/2023 dose increase cites "Phos 5.6," but no phosphorus of 5.6 existed until 10/10/2023, and on 08/14 the patient was being discharged with sevelamer on hold.
+   - The 10/10/2023 calcitriol increase has no matching fill. Ferrous sulfate was filled once. Metoclopramide (05/30/2023) has no fill; if he is taking it, it needs a renal dose reduction.
+   - **The hospital discharge medication list (page 2) is missing**, so it is unclear which held medications were restarted.
 
-*All charted values come directly from the source files. The only transformations are the labelled mmol/L→mg/dL conversions and the BMI arithmetic noted in §11. Nothing was estimated or imputed. Gaps are shown as gaps.*
+**Units, dates and flags**
+
+8. **Glucose units are mixed in `lab_results.csv`.** Four values are mmol/L with no units. Two different ranges were used: 3.9–6.1 mmol/L (≈70–110 mg/dL) and 70–100 mg/dL. As a result, 03/04/2022 (5.9 mmol/L ≈ 106 mg/dL) was flagged NORMAL.
+9. **Flow-sheet glucose conflicts with lab results.** 03/04/2022: 147 vs lab ≈106. The 147 is identical to the next visit's value, which suggests it was copied forward. 11/02/2023: 168 vs lab ≈133.
+10. **Date formats are inconsistent.** The archive uses DD/MM/YYYY (for example, "03/02/2022" = 3 Feb 2022). `lab_results.csv` uses MM/DD for results but DD/MM for the DOB. The CSV row "04/03/2022" matches the 04/04/2022 visit note exactly, so it is charted as 04/03/2022, the same visit.
+11. **Archive flags are wrong.** eGFR 64 (09/2020) and 62 (02/2021) are flagged LOW although both are ≥60. eGFR 60 (02/2022) is flagged LOW. eGFR units are written "ml/min" instead of mL/min/1.73m².
+12. **Hemoglobin 06/15/2022 (11.8) has a specimen-delay warning**, and an earlier note cites 12.2. The nephrology note says "PCP had 11.8 on 9/22," but no CBC was drawn on 09/22/2022.
+
+**Source reliability and lower-impact items**
+
+13. The **hospital discharge summary is an unfinalized draft** with page 2 missing; full note via HIM at ext. 4400. Its values were used but should be checked against the final record. The 04/04/2022 **draft** PCP note (illegible BP) was replaced by the amended note, and the amended values were used.
+14. The **vitals log was transcribed from paper in 06/2024.** The ambiguous characters were resolved using matching physician notes: "I52" = 152 and "8O" = 80 are confirmed; "I49" = 149 is consistent with the note.
+15. Minor items:
+    - Endocrinology says HbA1c differences were due to "fasting status," but HbA1c does not depend on fasting.
+    - Endocrinology's 05/30/2023 BP (160/99) is identical to the 05/18/2023 flow-sheet BP, which may be a copy-forward.
+    - Cardiology's note cites "eGFR ~31–34," but 31 was not measured until 04/17/2024.
+    - The PCP header says "Age: 65 at most recent note," but he was 64 on 01/10/2023.
+
+---
+
+## 9. Summary
+
+### Immediate risks (highest first)
+
+1. **Hyperkalemia:** latest 6.0, ≥5.6 since 10/2023, on maximum-dose ACE inhibitor, with a prior admission and a missed hold. Risk of dangerous heart rhythms.
+2. **Severe uncontrolled hypertension** (169/103; 184/112 episode) with heart damage already present (LVH, EF 60 → 52%, BNP 186). It blocks transplant listing, and the new ESA may raise BP further.
+3. **Rapidly progressive CKD:** eGFR 31, falling about 12.7 per year; UPCR 620. Nausea and poor appetite may be uremic symptoms. Kidney failure planning is time-sensitive.
+4. **Worsening metabolic acidosis** (CO2 16), which also raises potassium.
+5. **Anemia** (Hgb 9.4) with **no iron workup or GI evaluation documented**, on a newly started ESA.
+6. **CKD mineral-bone disease:** phosphorus 6.1, PTH 276 (about 4x the upper limit), vitamin D deficiency not treated.
+7. **Malnutrition risk:** albumin 2.8, 13 lb weight loss.
+8. **Diabetes above the transplant threshold** (8.5%), and HbA1c is not fully reliable here.
+9. **Medication safety:** five prescribers with no reconciled list; no insulin fills on record; a metoclopramide prescription alongside borderline QTc and CKD.
+
+### Comprehensive treatment plan (all recommendations above, by urgency)
+
+**Within days**
+- Repeat K on a non-hemolyzed sample, with an ECG if ≥6.0.
+- Start a potassium binder and low-K diet. Reduce lisinopril if K stays >5.5 despite the binder, and give clear hold instructions.
+- Repeat the BMP after changes.
+- Confirm which medications he is actually taking: insulin, ESA start date, furosemide dose, sevelamer dose.
+
+**Within 2–4 weeks**
+- **Blood pressure:** intensify treatment (diuretic optimization; beta-blocker, chlorthalidone or hydralazine as prescriber chooses), with home BP monitoring.
+- **Bicarbonate:** titrate toward ≥22.
+- **SGLT2 inhibitor:** start, if no contraindication.
+- **Anemia:** iron studies, B12, folate and reticulocyte count. GI evaluation if iron deficient. IV iron as indicated. Monthly Hgb on ESA, target ≤11.5.
+- **Vitamin D:** replete 25-OH vitamin D.
+- **Dietitian:** renal dietitian referral covering K, phosphorus, sodium, protein and calories.
+
+**Ongoing**
+- **Diabetes:** CGM; keep titrating insulin to <8.0%; reconsider GLP-1 RA once appetite and weight are stable.
+- **Phosphorus and PTH:** binder optimization; calcitriol adjusted with corrected calcium.
+- **Proteinuria:** check UACR every 3–6 months; finerenone once K ≤5.0.
+- **Nutrition:** monitor albumin and dry weight.
+
+### Recommended changes to the care plan
+
+1. **One reconciled medication list** shared by PCP, nephrology, endocrinology, cardiology and pharmacy, updated at every visit.
+2. **Monitoring schedule:**
+   - BMP (with K, CO2, corrected Ca, phosphorus) monthly until K and CO2 are stable, then every 3 months.
+   - Hgb monthly on ESA.
+   - HbA1c every 3 months, together with CGM data.
+   - UACR, PTH and 25-OH vitamin D every 3–6 months.
+   - **Add a lipid panel and consider a statin.** KDIGO and ADA recommend one for a patient his age with diabetes and CKD, and none is on record.
+3. **Lab practice:** potassium drawn in a way that avoids hemolysis, with same-day repeat of hemolyzed results. One glucose unit (mg/dL) and ISO dates (YYYY-MM-DD) in the lab archive. Flags recalculated against a stated reference range.
+4. **Transplant readiness checklist**, tracked explicitly:
+   - HbA1c <8.0%.
+   - BP <140/90.
+   - Age-appropriate cancer screening, including colonoscopy.
+   - Hepatitis B surface antibody status and vaccination.
+   - Dental clearance.
+   - Cardiology follow-up.
+5. **Kidney replacement therapy planning:** dialysis option education, vascular access status, and advance care planning, now that eGFR is near 30.
+6. **Retrieve missing records and correct the chart:**
+   - Iron studies, hematology notes and any thyroid labs.
+   - Hospital discharge page 2 (HIM ext. 4400).
+   - The 2019 echo report.
+   - Remove the donor data (Section 8.1).
+   - Correct the endocrinology threshold statement (Section 8.2).
